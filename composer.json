@@ -1,0 +1,24 @@
+{
+    "name": "rutger/restphp",
+    "description": "A very basic class for creating RESTful PHP API's.",
+    "keywords": ["rest", "restful", "api", "php", "basic"],
+    "homepage": "https://github.com/rutger-speksnijder/restphp",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Rutger Speksnijder",
+            "email": "rutgerspeksnijder@hotmail.com",
+            "homepage": "https://github.com/rutger-speksnijder",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "bshaffer/oauth2-server-php": "~1.8"
+    },
+    "autoload": {
+        "psr-0": {
+            "RestPHP\\": "src/"
+        }
+    }
+}
