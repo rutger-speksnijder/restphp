@@ -95,7 +95,7 @@ if (!isset($_REQUEST['l'])) {
 }
 
 // Your API class extending from the BaseAPI
-class API extends \Rutger\RestPHP\BaseAPI {
+class API extends \RestPHP\BaseAPI {
     public function example() {
         $this->setResponse(array('message' => 'This is an example message!'));
         $this->setStatusCode(200);
