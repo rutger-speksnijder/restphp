@@ -131,7 +131,7 @@ In the example above we created two routes, one to "/example" and one to "/user/
 ## Todo
  - Different configuration for individual API's instead of one configuration file.
  - Support more HTTP methods
- - Create unit tests and add code coverage
+ - Extend unit tests and add code coverage
 
 ## License
 The MIT License (MIT)
