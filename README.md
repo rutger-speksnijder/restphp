@@ -35,7 +35,7 @@ Install using composer:
 ```sh
 composer require "rutger/restphp"
 ```
-Or you can download the package and create an autoloader for it (below is an example how to do this).
+Or you can download the package and create an autoloader for it (below is an example of how to do this).
 
 ## Configuration
 Before you start using RestPHP change the config.php file located in the package's folder.
@@ -57,7 +57,7 @@ Remaining settings that should be configured before you start using RestPHP:
 You probably want to create an htaccess file which points all requests to a PHP file in which you create your API class.
 
 ### htaccess
-An example of such an htaccess file:
+An example of an htaccess file which points all requests (starting with "v1/") to an index.php file:
 ```
 RewriteEngine on
 RewriteBase /
@@ -132,6 +132,7 @@ In the example above we created two routes, one to "/example" and one to "/user/
  - Different configuration for individual API's instead of one configuration file.
  - Support more HTTP methods
  - Extend unit tests and add code coverage
+ - Add support for the HATEOAS constraint (http://restcookbook.com/Basics/hateoas/)
 
 ## License
 The MIT License (MIT)
