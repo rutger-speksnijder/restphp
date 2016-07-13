@@ -78,7 +78,7 @@ An example of this:
 error_reporting(-1);
 ini_set('display_errors', 'On');
 
-// Autoloader example
+// Autoloader example if you're not using composer
 spl_autoload_register(function($className) {
     $className = ltrim($className, '\\');
     $fileName  = '';
@@ -92,6 +92,9 @@ spl_autoload_register(function($className) {
 
     require $fileName;
 });
+
+// Composer:
+// require 'vendor/autoload.php';
 
 // Check for an empty request
 if (!isset($_REQUEST['l'])) {
