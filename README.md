@@ -35,7 +35,7 @@ Install using composer (this will install the latest stable version):
 ```sh
 composer require rutger/restphp
 ```
-If you want to get the recent development version:
+If you want to get the most recent development version:
 ```sh
 composer require rutger/restphp dev-master
 ```
