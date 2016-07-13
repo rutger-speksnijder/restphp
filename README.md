@@ -136,6 +136,7 @@ The router object allows you to create routes to your methods. It supports the u
 In the example above we created two routes, one to "/example" and one to "/user/(any number here)". These methods will be called when a GET request is done to these routes.
 
 ## Todo
+ - Explain security a bit more
  - Different configuration for individual API's instead of one configuration file.
  - Support more HTTP methods
  - Extend unit tests and add code coverage
