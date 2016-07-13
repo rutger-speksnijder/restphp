@@ -31,9 +31,13 @@ RestPHP supports the following HTTP methods:
  - DELETE
 
 ## Installation
-Install using composer:
+Install using composer (this will install the latest stable version):
 ```sh
-composer require "rutger/restphp"
+composer require rutger/restphp
+```
+If you want to get the recent development version:
+```sh
+composer require rutger/restphp dev-master
 ```
 Or you can download the package and create an autoloader for it (below is an example of how to do this).
 
