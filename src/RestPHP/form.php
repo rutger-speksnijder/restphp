@@ -2,11 +2,11 @@
 /**
  * Form
  *
- * An example form to use for the authorization endpoint.
+ * Default form to use for the "/authorize" endpoint.
  *
  * @author Rutger Speksnijder
- * @since RestPHP 1.0
- * @version 1.0
+ * @since RestPHP 1.0.0
+ * @version 1.1.0
  * @package RestPHP
  * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE
  */

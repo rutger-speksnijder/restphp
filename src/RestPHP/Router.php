@@ -7,8 +7,8 @@ namespace RestPHP;
  * Router class for routing routes to api methods.
  *
  * @author Rutger Speksnijder
- * @since RestPHP 1.0
- * @version 1.0
+ * @since RestPHP 1.0.0
+ * @version 1.0.0
  * @package RestPHP
  * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE
  */

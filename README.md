@@ -47,11 +47,12 @@ If you want to use OAuth2 to secure your API, you will have to configure these s
  - useAuthorization: Set this to true to use authorization
  - authorizationMode
  - redirectAuthorization
+ - authorizationForm
  - dsn
  - username
  - password
 
-More information about these settings can be found in the config.php file.
+More information about these settings can be found in the default config.php file.
 
 Remaining settings that should be configured before you start using RestPHP:
  - returnType: The content type of returned data.
@@ -74,6 +75,7 @@ RewriteRule ^v1/(.*)$ index.php?l=$1 [L,QSA,NC]
 In your index.php file you would then create your API class.
 An example of this:
 ```php
+<?php
 // Enable errors
 error_reporting(-1);
 ini_set('display_errors', 'On');
@@ -114,7 +116,7 @@ class API extends \RestPHP\BaseAPI {
     }
 }
 
-// Create the API
+// Create the API using the default configuration file
 $api = new API($_REQUEST['l']);
 
 // Define routes
@@ -123,6 +125,32 @@ $api->getRouter()->get('/user/([0-9]+)', array($api, 'user'));
 
 // Call the process method
 $api->process();
+```
+
+#### Examples of using a configuration object
+Using a configuration file:
+```php
+<?php
+// Create the API using a different configuration file
+$configuration = \RestPHP\Configuration::createFromFile('config.php');
+$api = new API($_REQUEST['l'], $configuration);
+```
+Creating the object:
+```php
+<?php
+// Create the API by creating our own configuration object
+$configuration = new \RestPHP\Configuration(
+    $useAuthorization = false,
+    $authorizationMode = 1,
+    $redirectAuthorization = false,
+    $authorizationForm = $_SERVER['DOCUMENT_ROOT'] . '/myform.php',
+    $dsn = false,
+    $username = false,
+    $password = false,
+    $returnType = 'html',
+    $clientReturnType = true
+);
+$api = new API($_REQUEST['l'], $configuration);
 ```
 
 ### Routes
@@ -137,7 +165,6 @@ In the example above we created two routes, one to "/example" and one to "/user/
 
 ## Todo
  - Explain security a bit more
- - Different configuration for individual API's instead of one configuration file.
  - Support more HTTP methods
  - Extend unit tests and add code coverage
  - Add support for the HATEOAS constraint (http://restcookbook.com/Basics/hateoas/)

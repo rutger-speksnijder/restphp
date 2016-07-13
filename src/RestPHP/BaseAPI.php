@@ -7,8 +7,8 @@ namespace RestPHP;
  * Base abstract class to extend from when creating API's.
  *
  * @author Rutger Speksnijder
- * @since RestPHP 1.0
- * @version 1.0
+ * @since RestPHP 1.0.0
+ * @version 1.1.0
  * @package RestPHP
  * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE
  */
@@ -71,10 +71,10 @@ abstract class BaseAPI {
     protected $finalOutput = false;
 
     /**
-     * An array containing configuration data.
-     * @var array
+     * The configuration object for this api.
+     * @var \RestPHP\Configuration
      */
-    protected $config;
+    protected $configuration;
 
     /**
      * An array with HTTP status messages.
@@ -131,10 +131,19 @@ abstract class BaseAPI {
      * Allows for CORS, assembles and pre-processes the data.
      *
      * @param string $request The request url.
+     * @param optional object $configuration The configuration object.
+     *          If this is false, the default config.php file will be used.
+     *
+     * @throws Exception Throws an exception for unknown request methods.
+     * @throws Exception Throws an exception if the token server can't be created.
+     * @throws Exception Throws an exception if configuration is
+     * supplied but is not an instance of \RestPHP\Configuration.
+     * @throws Exception Throws an exception if the configuration
+     * object can't be created from the default file.
      *
      * @return BaseAPI A new instance of the BaseAPI class.
      */
-    public function __construct($request) {
+    public function __construct($request, $configuration = false) {
         // Set headers for cross domain requests
         header('Access-Control-Allow-Origin: *');
         header('Access-Control-Allow-Methods: *');
@@ -159,14 +168,28 @@ abstract class BaseAPI {
             }
         }
 
-        // Load configuration
-        $this->config = require dirname(__FILE__) . '/config.php';
-        $this->returnType = strtolower($this->config['returnType']);
+        // Check if we have a configuration object
+        if ($configuration !== false) {
+            if (!($configuration instanceof \RestPHP\Configuration)) {
+                throw new \Exception("Supplied configuration object is not an instance of \\RestPHP\\Configuration.");
+            }
+            $this->configuration = $configuration;
+        } else {
+            // Load from default configuration
+            try {
+                $this->configuration = \RestPHP\Configuration::createFromFile(dirname(__FILE__) . '/config.php');
+            } catch (\Exception $ex) {
+                throw $ex;
+            }
+        }
+
+        // Set our return type
+        $this->returnType = strtolower($this->configuration->getReturnType());
 
         // Create the token server if necessary
-        if ($this->config['useAuthorization']) {
+        if ($this->configuration->getUseAuthorization()) {
             try {
-                $this->tokenServer = \RestPHP\BaseAPI::createTokenServer();
+                $this->tokenServer = \RestPHP\BaseAPI::createTokenServer($this->configuration);
             } catch (\Exception $ex) {
                 throw $ex;
             }
@@ -194,7 +217,7 @@ abstract class BaseAPI {
         }
 
         // Set the return type to the client's requested return type, if any
-        if ($this->config['clientReturnType'] === true && isset($this->data['return_type'])) {
+        if ($this->configuration->getClientReturnType() === true && isset($this->data['return_type'])) {
             $this->returnType = strtolower($this->data['return_type']);
         }
 
@@ -253,6 +276,72 @@ abstract class BaseAPI {
      */
     public function getResponse() {
         return $this->response;
+    }
+
+    /**
+     * Set status code
+     *
+     * Sets the status code.
+     *
+     * @param int $statusCode The status code.
+     *
+     * @throws Exception Throws an exception when an invalid status code is used.
+     *
+     * @return \RestPHP\BaseAPI The current object.
+     */
+    public function setStatusCode($statusCode) {
+        $statusCode = (int)$statusCode;
+        if ($statusCode < 100 || $statusCode >= 600) {
+            throw new \Exception("Invalid status code: {$statusCode}.");
+        }
+        $this->statusCode = $statusCode;
+        return $this;
+    }
+
+    /**
+     * Get status code
+     *
+     * Gets the status code.
+     *
+     * @return int The status code.
+     */
+    public function getStatusCode() {
+        return $this->statusCode;
+    }
+
+    /**
+     * Get status message
+     *
+     * Gets the HTTP status message for a status code.
+     *
+     * @param int $code The status code.
+     *
+     * @return string The http status.
+     */
+    protected function getStatusMessage($code) {
+        return (isset($this->statusMessages[$code]) ? $this->statusMessages[$code] : $this->statusMessages[500]);
+    }
+
+    /**
+     * Get configuration
+     *
+     * Gets the configuration object.
+     *
+     * @return \RestPHP\Configuration The configuration object.
+     */
+    public function getConfiguration() {
+        return $this->configuration;
+    }
+
+    /**
+     * Get router
+     *
+     * Returns the router object.
+     *
+     * @return \RestPHP\Router The router object.
+     */
+    public function getRouter() {
+        return $this->router;
     }
 
     /**
@@ -368,50 +457,6 @@ abstract class BaseAPI {
     }
 
     /**
-     * Set status code
-     *
-     * Sets the status code.
-     *
-     * @param int $statusCode The status code.
-     *
-     * @throws Exception Throws an exception when an invalid status code is used.
-     *
-     * @return \RestPHP\BaseAPI The current object.
-     */
-    public function setStatusCode($statusCode) {
-        $statusCode = (int)$statusCode;
-        if ($statusCode < 100 || $statusCode >= 600) {
-            throw new \Exception("Invalid status code: {$statusCode}.");
-        }
-        $this->statusCode = $statusCode;
-        return $this;
-    }
-
-    /**
-     * Get status code
-     *
-     * Gets the status code.
-     *
-     * @return int The status code.
-     */
-    public function getStatusCode() {
-        return $this->statusCode;
-    }
-
-    /**
-     * Get status message
-     *
-     * Gets the HTTP status message for a status code.
-     *
-     * @param int $code The status code.
-     *
-     * @return string The http status.
-     */
-    protected function getStatusMessage($code) {
-        return (isset($this->statusMessages[$code]) ? $this->statusMessages[$code] : $this->statusMessages[500]);
-    }
-
-    /**
      * Output
      *
      * Outputs the current response in the correct response type
@@ -467,7 +512,7 @@ abstract class BaseAPI {
      */
     public function process() {
         // Check if we should verify the request
-        if ($this->config['useAuthorization']) {
+        if ($this->configuration->getUseAuthorization()) {
             if (
                 $this->request != '/token' &&
                 $this->request != '/authorize' &&
@@ -521,17 +566,6 @@ abstract class BaseAPI {
     }
 
     /**
-     * Get router
-     *
-     * Returns the router object.
-     *
-     * @return \RestPHP\Router The router object.
-     */
-    public function getRouter() {
-        return $this->router;
-    }
-
-    /**
      * Add routes
      *
      * Adds default routes for the API regarding tokens.
@@ -542,16 +576,16 @@ abstract class BaseAPI {
     protected function addRoutes() {
         // Define a "not found" route
         $this->router->add('', function() {
-            $this->setResponse('Unknown endpoint.');
+            $this->setResponse(array('error' => 1, 'message' => 'Unknown endpoint.'));
             $this->setStatusCode(404);
         });
 
         // Only add these routes if we're using authorization
-        if ($this->config['useAuthorization']) {
+        if ($this->configuration->getUseAuthorization()) {
             // Token route for requesting tokens
             $this->router->add('/token', array($this, 'token'));
 
-            if ($this->config['authorizationMode'] >= 2) {
+            if ($this->configuration->getAuthorizationMode() >= 2) {
                 // Token route for authorizing a client
                 $this->router->add('/authorize', array($this, 'authorize'));
             }
@@ -566,7 +600,8 @@ abstract class BaseAPI {
      * Creates the new token server.
      * Sets the connection to the database and grant types.
      *
-     * @param optional boolean $fromConfig Whether to load settings from config.
+     * @param optional object $configuration Whether to load
+     *  settings from a configuration object.
      * @param optional string $dsn The data source name.
      * @param optional string $username The database username.
      * @param optional string $password The database password.
@@ -575,15 +610,12 @@ abstract class BaseAPI {
      *
      * @return \OAuth2\Server A new instance of the OAuth2 Server class.
      */
-    public static function createTokenServer($fromConfig = true, $dsn = '', $username = '', $password = '') {
-        // Load the configuration file
-        $config = require dirname(__FILE__) . '/config.php';
-
-        // Set variables from the configuration file
-        if ($fromConfig) {
-            $dsn = $config['dsn'];
-            $username = $config['username'];
-            $password = $config['password'];
+    public static function createTokenServer($configuration = false, $dsn = '', $username = '', $password = '') {
+        // Set variables from the configuration object
+        if ($configuration && ($configuration instanceof \RestPHP\Configuration)) {
+            $dsn = $configuration->getDsn();
+            $username = $configuration->getUsername();
+            $password = $configuration->getPassword();
         }
 
         // Catch errors for pdo object creation and creating the server
@@ -593,15 +625,15 @@ abstract class BaseAPI {
             $server = new \OAuth2\Server($storage);
 
             // Add grant types
-            if ($config['authorizationMode'] === 1) {
+            if ($configuration->getAuthorizationMode() === 1) {
                 $server->addGrantType(new \OAuth2\GrantType\ClientCredentials($storage));
-            } elseif ($config['authorizationMode'] === 2) {
+            } elseif ($configuration->getAuthorizationMode() === 2) {
                 $server->addGrantType(new \OAuth2\GrantType\AuthorizationCode($storage));
-            } elseif ($config['authorizationMode'] === 3) {
+            } elseif ($configuration->getAuthorizationMode() === 3) {
                 $server->addGrantType(new \OAuth2\GrantType\ClientCredentials($storage));
                 $server->addGrantType(new \OAuth2\GrantType\AuthorizationCode($storage));
             } else {
-                throw new \Exception("Unknown authorization mode: \"{$config['authorizationMode']}\".");
+                throw new \Exception("Unknown authorization mode: \"{$configuration->getAuthorizationMode()}\".");
             }
         } catch (\Exception $ex) {
             throw $ex;
@@ -663,7 +695,7 @@ abstract class BaseAPI {
         if ($this->method != 'post' || !isset($this->data['authorized'])) {
             // Get the authorization form
             ob_start();
-            require dirname(__FILE__) . '/form.php';
+            require $this->configuration->getAuthorizationForm();
             $form = ob_get_clean();
             $this->response = $form;
             $this->statusCode = 200;
@@ -679,7 +711,7 @@ abstract class BaseAPI {
         // Check if the request was successful
         if ($response->getStatusCode() === 302) {
             // Check if we should redirect according to our configuration
-            if ($this->config['redirectAuthorization'] === true) {
+            if ($this->configuration->getRedirectAuthorization() === true) {
                 // The response will contain a Location header we should navigate to
                 header('Location: ' . $response->getHttpHeader('Location'));
                 exit;

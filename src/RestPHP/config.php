@@ -2,12 +2,12 @@
 /**
  * Config
  *
- * Main configuration file for the RestPHP class.
+ * Default configuration file for the RestPHP class.
  * Make sure to define your data source.
  *
  * @author Rutger Speksnijder
- * @since RestPHP 1.0
- * @version 1.0
+ * @since RestPHP 1.0.0
+ * @version 1.1.0
  * @package RestPHP
  * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE
  */
@@ -20,19 +20,24 @@ return [
 	// - 2: This mode will allow clients to first request authorization using the "/authorize" endpoint.
 	// - 	This will generate an authorization code which can then be used to generate an access token.
 	// - 3: Both modes can be used.
-	'authorizationMode' => 3,
+	'authorizationMode' => 2,
 
 	// Whether to redirect authorization requests or to just show the authorization code
 	'redirectAuthorization' => false,
 
+	// The authorization form file. This file will be loaded when the client
+	// - navigates to the "/authorize" endpoint. You can overwrite this setting
+	// - and show another form, as long as you keep the authorized input with values "yes/no".
+	'authorizationForm' => dirname(__FILE__) . '/form.php',
+
 	// Data source name for your application
-	'dsn' => 'mysql:dbname=api;host=localhost',
+	'dsn' => 'mysql:dbname=YOUR_DATABASE_NAME;host=localhost',
 
 	// Database username
-	'username' => 'root',
+	'username' => '',
 
 	// Database password
-	'password' => 'test123',
+	'password' => '',
 
 	// The return type for the api.
 	// - Valid types are: json, xml, html or text.
