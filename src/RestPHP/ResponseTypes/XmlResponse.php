@@ -33,11 +33,12 @@ class XmlResponse extends \RestPHP\Response {
      * Transforms the data into an xml response.
      *
      * @param mixed $data The data to transform.
+     * @param optional array $hypertextRoutes An array with hypertext routes.
      *
      * @return string The transformed response.
      */
-    protected function transform($data) {
-        return $this->transformToXml($data);
+    protected function transform($data, $hypertextRoutes = array()) {
+        return $this->transformToXml($data, $hypertextRoutes);
     }
 
     /**
@@ -46,10 +47,11 @@ class XmlResponse extends \RestPHP\Response {
      * Recursively converts the response into an xml string.
      *
      * @param mixed $data The data to transform.
+     * @param optional array $hypertextRoutes An array with hypertext routes.
      *
      * @return string The response as an xml string.
      */
-     private function transformToXml($data = [], $depth = 0) {
+     private function transformToXml($data = [], $hypertextRoutes = array(), $depth = 0) {
         // Set the xml string
         $xml = '';
 
@@ -61,7 +63,7 @@ class XmlResponse extends \RestPHP\Response {
 
         // Check if data is an array. If not, return a response with data to string.
         if (!is_array($data)) {
-            return "<?xml version=\"1.0\"?>\n<response>{$data}</response>";
+            return "<?xml version=\"1.0\"?>\n<response>{$data}{$this->getHypertextXml($hypertextRoutes)}</response>";
         }
 
         // Loop through the data
@@ -88,10 +90,34 @@ class XmlResponse extends \RestPHP\Response {
 
         // Add the closing tag if this is depth 0
         if ($depth === 0) {
+            $xml .= $this->getHypertextXml($hypertextRoutes);
             $xml .= "</response>\n";
         }
 
         // Return the xml string
+        return $xml;
+    }
+
+    /**
+     * Get hypertext xml
+     *
+     * Generates the xml for the hypertext routes.
+     *
+     * @param optional array $routes The hypertext routes.
+     *
+     * @return string The hypertext routes xml string.
+     */
+    private function getHypertextXml($routes = array()) {
+        // Check if we have routes
+        if (!$routes) {
+            return '';
+        }
+
+        // Loop through the routes and add them as links to the xml
+         $xml = '';
+        foreach ($routes as $name => $route) {
+            $xml .= "<link rel=\"{$name}\" href=\"{$route}\"/>\n";
+        }
         return $xml;
     }
 }

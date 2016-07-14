@@ -21,7 +21,7 @@ RestPHP can return data in multiple content types. The following types are suppo
  - HTML
  - Plain text
 
-You can add support for other content types by editing the array in the Response class and add a class for your content type.
+You can add support for other content types by editing the array in the Response class and adding a class for your content type.
 More on that below under usage.
 
 You can also let the client decide which type of content should be returned.
@@ -63,7 +63,7 @@ If you want to use OAuth2 to secure your API, you will have to configure these s
  - password
 
 Remaining settings that should be configured before you start using RestPHP:
- - returnType: The content type of returned data.
+ - returnType: The content type of data to return.
  - clientReturnType: Whether to allow the client to specify the "return_type" parameter.
 
 More information about these settings can be found in the default config.php file.
@@ -72,13 +72,13 @@ More information about these settings can be found in the default config.php fil
 You probably want to create an htaccess file which points all requests to a PHP file in which you create your API class.
 
 ### htaccess
-An example of an htaccess file which points all requests (starting with "v1/") to an index.php file:
+An example of an htaccess file which points all requests to an index.php file:
 ```
 RewriteEngine on
 RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^v1/(.*)$ index.php?l=$1 [L,QSA,NC]
+RewriteRule ^(.*)$ index.php?l=$1 [L,QSA,NC]
 ```
 
 ### index.php
@@ -124,6 +124,8 @@ class API extends \RestPHP\BaseAPI {
         if ($this->method == 'get') {
             $this->setResponse(array('message' => 'You requested user with id: ' . $id . '.'));
             $this->setStatusCode(200);
+            $this->addHypertextRoute('connect', "/user/{$id}/connect");
+            $this->addHypertextRoute('disconnect', "/user/{$id}/disconnect");
         } elseif ($this->method == 'head') {
             // Code to check if the user with this id exists
             $found = false;
@@ -151,7 +153,7 @@ In the example above we created three routes, one to "/example" and two to "/use
 
 The route to "/example" will return a simple message.
 The route to "/user/(any number here)" will return a message if the request is a GET request.
-If the request to "/user/(any number here)" is a HEAD request, we will check if the user exists and set the status code accordingly. 
+If the request to "/user/(any number here)" is a HEAD request, we will check if the user exists and set the status code accordingly.
 
 HEAD requests can be used to quickly check if a resource exists on a server, without retrieve a response body (http://www.pragmaticapi.com/blog/2013/02/14/restful-patterns-for-the-head-verb).
 
@@ -211,13 +213,16 @@ class ImageResponse extends \RestPHP\Response {
     );
 
     // The main method that gets called to transform the data
-    protected function transform($data) {
-        return $this->transformToImage($data);
+    protected function transform($data, $hypertextRoutes = array()) {
+        return $this->transformToImage($data, $hypertextRoutes);
     }
 
     // Logic to transform an array or string of data into an image
-    private function transformToImage($data) {
-        return $data;
+    //
+    // Make sure to also transform the hypertext routes into the appropriate format
+    // An example of this can be found in the other response type classes
+    private function transformToImage($data, $hypertextRoutes = array()) {
+        return array_merge($data, $hypertextRoutes);
     }
 }
 ```
@@ -225,6 +230,15 @@ class ImageResponse extends \RestPHP\Response {
 And that's all there is to it. You can now set "image" as your response type in the configuration,
 or let clients specify the "Accept" header and return an image based on that.
 
+#### HATEOAS
+The RestPHP library supports the HATEOAS constraint.
+In the example above, in the "user" method, we added two hypertext routes.
+Hypertext routes basically tell the client what can be done next after a request (http://restcookbook.com/Basics/hateoas/).
+In the example we added a connect and disconnect hypertext route to the response (currently these routes don't do anything).
+The response type classes SHOULD take care of these extra routes and SHOULD add them to the response.
+A link with the current route and relationship "self" is always added to the hypertext routes.
+
+See http://restcookbook.com/Basics/hateoas/ for more information about this constraint.
 
 ### Routes
 The router object allows you to create routes to your methods. It supports the use of regex and has the following methods:
@@ -240,7 +254,6 @@ The router object allows you to create routes to your methods. It supports the u
 \* By default, you don't have to specify methods for an OPTIONS request. The BaseAPI class will handle these requests and look up all available methods for the requested route. You can disable this by searching in the BaseAPI class for "this->method == 'options'".
 
 ## Todo
- - Add support for the HATEOAS constraint (http://restcookbook.com/Basics/hateoas/)
  - Add support for accepting different content types (e.g. let clients perform requests with xml or json)
  - Add support for caching
  - Explain security a bit more

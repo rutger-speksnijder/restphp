@@ -33,22 +33,17 @@ abstract class BaseAPI {
     protected $data = [];
 
     /**
-     * The router for this api.
-     * @var \RestPHP\Router
-     */
-    protected $router;
-
-    /**
-     * The token server for OAuth2 authorization.
-     * @var \OAuth2\Server
-     */
-    protected $tokenServer;
-
-    /**
      * The response from the api.
      * @var mixed
      */
     protected $response = '';
+
+    /**
+     * The hypertext routes the client can follow
+     * after the current request.
+     * @var array
+     */
+    protected $hypertextRoutes = array();
 
     /**
      * The return type.
@@ -61,6 +56,18 @@ abstract class BaseAPI {
      * @var int
      */
     protected $statusCode = 200;
+
+    /**
+     * The router for this api.
+     * @var \RestPHP\Router
+     */
+    protected $router;
+
+    /**
+     * The token server for OAuth2 authorization.
+     * @var \OAuth2\Server
+     */
+    protected $tokenServer;
 
     /**
      * A value indicating whether the output is final.
@@ -346,6 +353,62 @@ abstract class BaseAPI {
     }
 
     /**
+     * Get hypertext routes
+     *
+     * Gets the hypertext routes.
+     *
+     * @return array The hypertext routes.
+     */
+    public function getHypertextRoutes() {
+        return $this->hypertextRoutes;
+    }
+
+    /**
+     * Set hypertext routes
+     *
+     * Sets the hypertext routes.
+     *
+     * @param array $hypertextRoutes The array with hypertext routes.
+     *
+     * @return \RestPHP\BaseAPI The current object.
+     */
+    public function setHypertextRoutes($hypertextRoutes) {
+        $this->hypertextRoutes = $hypertextRoutes;
+        return $this;
+    }
+
+    /**
+     * Remove hypertext route
+     *
+     * Removes a hypertext route by name.
+     *
+     * @param string $name The hypertext route's name.
+     *
+     * @return \RestPHP\BaseAPI The current object.
+     */
+    public function removeHypertextRoute($name) {
+        if (isset($this->hypertextRoutes[$name])) {
+            unset($this->hypertextRoutes[$name]);
+        }
+        return $this;
+    }
+
+    /**
+     * Add hypertext route
+     *
+     * Adds a hypertext route.
+     *
+     * @param string $name The hypertext route's name.
+     * @param string $route The route.
+     *
+     * @return \RestPHP\BaseAPI The current object.
+     */
+    public function addHypertextRoute($name, $route) {
+        $this->hypertextRoutes[$name] = $route;
+        return $this;
+    }
+
+    /**
      * Output
      *
      * Outputs the current response in the correct response type
@@ -369,8 +432,11 @@ abstract class BaseAPI {
         // HTTP status header
         header("HTTP/1.1 {$this->statusCode} {$this->getStatusMessage($this->statusCode)}");
 
+        // Add the current request to the hypertext routes
+        $this->hypertextRoutes['self'] = $this->request;
+
         // Create the response object, output the headers and print the response
-        $response = \RestPHP\Response::createResponse($this->returnType, $this->response);
+        $response = \RestPHP\Response::createResponse($this->returnType, $this->response, $this->hypertextRoutes);
         $response->outputHeaders();
         echo $response;
 

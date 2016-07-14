@@ -63,11 +63,12 @@ abstract class Response {
      * Constructs the new response class.
      *
      * @param mixed $data The response data.
+     * @param optional array $hypertextRoutes An array of hypertext routes.
      *
      * @return object The new response class.
      */
-    final public function __construct($data) {
-        $this->response = $this->transform($data);
+    final public function __construct($data, $hypertextRoutes = array()) {
+        $this->response = $this->transform($data, $hypertextRoutes);
     }
 
     /**
@@ -75,13 +76,15 @@ abstract class Response {
      *
      * This method takes an array or string of data
      * and transforms it into the appropriate response type.
-     * This method should return the transformed response data.
+     * This method should return the transformed response data
+     * with the hypertext routes the client can follow added to it.
      *
      * @param mixed $data The data to transform.
+     * @param optional array $hypertextRoutes An array of hypertext routes.
      *
      * @return string The transformed response data.
      */
-    abstract protected function transform($data);
+    abstract protected function transform($data, $hypertextRoutes = array());
 
     /**
      * Get response
@@ -115,14 +118,15 @@ abstract class Response {
      *
      * @param string $type The response type.
      * @param mixed $data The response data.
+     * @param optional array $hypertextRoutes An array with hypertext routes.
      *
      * @return object The new response object.
      */
-    final public static function createResponse($type, $data) {
+    final public static function createResponse($type, $data, $hypertextRoutes = array()) {
         if (isset(\RestPHP\Response::$supportedTypes[$type])) {
-            return new \RestPHP\Response::$supportedTypes[$type]($data);
+            return new \RestPHP\Response::$supportedTypes[$type]($data, $hypertextRoutes);
         }
-        return new \RestPHP\Response::$supportedTypes['text']($data);
+        return new \RestPHP\Response::$supportedTypes['text']($data, $hypertextRoutes);
     }
 
     /**
