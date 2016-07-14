@@ -8,7 +8,6 @@ namespace RestPHP;
  *
  * @author Rutger Speksnijder
  * @since RestPHP 1.1.0
- * @version 1.0.0
  * @package RestPHP
  * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE
  */
@@ -62,7 +61,7 @@ class Configuration {
 
 	/**
 	 * The type of data to return.
-	 * Valid types are: json, xml, html or text.
+	 * Valid types are can be defined in the Response class.
 	 * Any other types will be printed as text with
 	 * content-type header as text/plain.
 	 * @var string
@@ -71,9 +70,9 @@ class Configuration {
 
 	/**
 	 * A value indicating whether to allow the client to set the data return type.
-	 * If this is enabled, the client can pass a 'return_type' parameter which will
-	 * change the type of data to return. If this is an invalid type, the data will
-	 * be returned as plain text.
+	 * If this is enabled the type of data to return will be determined by the "Accept" header.
+	 * Supported types can be defined in the Response class. If it's an unknown type,
+	 * text/plain will be used.
 	 * @var boolean
 	 */
 	private $clientReturnType;

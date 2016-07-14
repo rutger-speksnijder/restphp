@@ -1,7 +1,7 @@
 {
     "name": "rutger/restphp",
-    "description": "A very basic class for creating RESTful PHP API's.",
-    "keywords": ["rest", "restful", "api", "php", "basic"],
+    "description": "A basic library for creating RESTful PHP API's.",
+    "keywords": ["rest", "restful", "api", "php", "basic", "library"],
     "homepage": "https://github.com/rutger-speksnijder/restphp",
     "license": "MIT",
     "authors": [

@@ -8,7 +8,6 @@ namespace RestPHP;
  *
  * @author Rutger Speksnijder
  * @since RestPHP 1.0.0
- * @version 1.1.0
  * @package RestPHP
  * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE
  */
@@ -163,8 +162,6 @@ abstract class BaseAPI {
                 $this->method = 'delete';
             } elseif ($_SERVER['HTTP_X_HTTP_METHOD'] == 'PUT') {
                 $this->method = 'put';
-            } else {
-                throw new \Exception("Unexpected request method.");
             }
         }
 
@@ -183,8 +180,12 @@ abstract class BaseAPI {
             }
         }
 
-        // Set our return type
-        $this->returnType = strtolower($this->configuration->getReturnType());
+        // Set the return type
+        if ($this->configuration->getClientReturnType() === true) {
+            $this->returnType = strtolower($this->parseAcceptHeader());
+        } else {
+            $this->returnType = strtolower($this->configuration->getReturnType());
+        }
 
         // Create the token server if necessary
         if ($this->configuration->getUseAuthorization()) {
@@ -214,11 +215,6 @@ abstract class BaseAPI {
                 $this->statusCode = 405;
                 $this->output(true);
                 break;
-        }
-
-        // Set the return type to the client's requested return type, if any
-        if ($this->configuration->getClientReturnType() === true && isset($this->data['return_type'])) {
-            $this->returnType = strtolower($this->data['return_type']);
         }
 
         // Create the router
@@ -345,118 +341,6 @@ abstract class BaseAPI {
     }
 
     /**
-     * Get response as xml
-     *
-     * Transforms the response into an xml string.
-     * This method recursively transforms the response
-     * for multi-dimensional arrays.
-     *
-     * @param mixed $data The data to transform.
-     * @param int $depth The current depth of the xml.
-     *
-     * @return string The xml string.
-     */
-    public function getResponseAsXml($data = [], $depth = 0) {
-        // Set the xml string
-        $xml = '';
-
-        // Starting depth, so add the xml starting lines
-        if ($depth === 0) {
-            $xml = "<?xml version=\"1.0\"?>\n";
-            $xml .= "<response>\n";
-        }
-
-        // Check if data is an array. If not, return a response with data to string.
-        if (!is_array($data)) {
-            $xml .= "<response>{$data}</response>";
-            return $xml;
-        }
-
-        // Loop through the data
-        foreach ($data as $k => $v) {
-            // Add tabs
-            for ($i = 0; $i < $depth; $i++) {
-                $xml .= "\t";
-            }
-
-            // Check if the value is an array. If so, generate xml for it.
-            if (is_array($v)) {
-                $xml .= "<{$k}>\n{$this->getResponseAsXml($v, $depth+1)}\n</{$k}>\n";
-            } else {
-                $xml .= "<{$k}>{$v}</{$k}>\n";
-            }
-        }
-
-        // Add the closing tag if this is depth 0
-        if ($depth === 0) {
-            $xml .= "</response>\n";
-        }
-
-        // Return the xml string
-        return $xml;
-    }
-
-    /**
-     * Get response as html
-     *
-     * Converts the response into an html string.
-     * This is an html string with tables and underlying tables.
-     *
-     * @return string The response as an html string.
-     */
-    public function getResponseAsHtml($data = []) {
-        if (!is_array($data)) {
-            return "<p>{$data}</p>";
-        }
-
-        $html = "<table style=\"border: 1px solid black;\">";
-        foreach ($data as $k => $v) {
-            if (is_array($v)) {
-                // Transform underlying data
-                $html .= "<tr><td style=\"border: 1px solid black; font-weight: bold;\">{$k}:</td><td style=\"border: 1px solid black;\">{$this->getResponseAsHtml($v)}</td></tr>";
-            } else {
-                $html .= "<tr><td style=\"border: 1px solid black; font-weight: bold;\">{$k}:</td><td style=\"border: 1px solid black;\">{$v}</td></tr>";
-            }
-        }
-        $html .= "</table>";
-        return $html;
-    }
-
-    /**
-     * Get response as text
-     *
-     * Converts the response into a string.
-     * If the response is an array it will loop through the array and print its values.
-     *
-     * @return string The response as a string.
-     */
-    public function getResponseAsString($data = [], $depth = 0) {
-        // Return the data as string if it's not an array
-        if (!is_array($data)) {
-            return (string)$data;
-        }
-
-        // Loop through the data and add to the string
-        $str = '';
-        foreach ($data as $k => $v) {
-            $str .= "\n";
-
-            // Add tabs
-            for ($i = 0; $i < $depth; $i++) {
-                $str.="\t";
-            }
-
-            if (is_array($v)) {
-                // Recursively transform underlying data
-                $str .= "{$k}: {$this->getResponseAsString($v, $depth+1)}\n";
-            } else {
-                $str .= "{$k}: {$v}\n";
-            }
-        }
-        return $str;
-    }
-
-    /**
      * Output
      *
      * Outputs the current response in the correct response type
@@ -471,6 +355,7 @@ abstract class BaseAPI {
         if ($this->finalOutput) {
             return;
         }
+        $this->finalOutput = $isFinal;
 
         // Disable caching
         header("Cache-Control: no-cache, must-revalidate");
@@ -479,27 +364,12 @@ abstract class BaseAPI {
         // HTTP status header
         header("HTTP/1.1 {$this->statusCode} {$this->getStatusMessage($this->statusCode)}");
 
-        $data = $this->getResponse();
+        // Create the response object, output the headers and print the response
+        $response = \RestPHP\Response::createResponse($this->returnType, $this->response);
+        $response->outputHeaders();
+        echo $response;
 
-        // Content type header
-        if ($this->returnType == 'json') {
-            header('Content-Type: application/json');
-            $data = json_encode($data);
-        } elseif ($this->returnType == 'xml') {
-            header('Content-Type: text/xml');
-            $data = $this->getResponseAsXml($data);
-        } elseif ($this->returnType == 'html') {
-            header('Content-Type: text/html');
-            $data = $this->getResponseAsHtml($data);
-        } else {
-            // Unknown response type
-            header('Content-Type: text/plain');
-            $data = $this->getResponseAsString($data);
-        }
-
-        // Print the data and return the current object
-        $this->finalOutput = $isFinal;
-        echo $data;
+        // Return the current object
         return $this;
     }
 
@@ -563,6 +433,23 @@ abstract class BaseAPI {
             $cleanInput = trim(strip_tags($data));
         }
         return $cleanInput;
+    }
+
+    /**
+     * Parse accept header
+     *
+     * Gets the first value in the accept header
+     * and parses it to a content type.
+     *
+     * @return string The parsed content type.
+     */
+    private function parseAcceptHeader() {
+        if (!isset($_SERVER['HTTP_ACCEPT']) || trim($_SERVER['HTTP_ACCEPT']) == '') {
+            return '';
+        }
+        $value = explode(',', $_SERVER['HTTP_ACCEPT'])[0];
+        return (isset(\RestPHP\Response::$supportedAcceptHeaders[$value]) ?
+            \RestPHP\Response::$supportedAcceptHeaders[$value] : 'text');
     }
 
     /**

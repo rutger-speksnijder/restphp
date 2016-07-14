@@ -21,7 +21,12 @@ RestPHP can return data in multiple content types. The following types are suppo
  - HTML
  - Plain text
 
-You can also let the client decide which type of content should be returned. The client can then pass a "return_type" parameter in the request specifying the type of content. This can also be turned off to only allow for a single content type to be returned.
+You can add support for other content types by editing the array in the Response class and add a class for your content type.
+More on that below under usage.
+
+You can also let the client decide which type of content should be returned.
+The "Accept" header will be parsed and the content type will be returned according to the header's value.
+This can also be turned off to only allow for the content type set in the configuration to be returned.
 
 ## Supported HTTP methods
 RestPHP supports the following HTTP methods:
@@ -42,7 +47,9 @@ composer require rutger/restphp dev-master
 Or you can download the package and create an autoloader for it (below is an example of how to do this).
 
 ## Configuration
-Before you start using RestPHP change the config.php file located in the package's folder.
+Before you start using RestPHP change the default config.php file located in the package's folder.
+You can also copy this file and place it in another location to create separate configurations for separate API's.
+
 If you want to use OAuth2 to secure your API, you will have to configure these settings:
  - useAuthorization: Set this to true to use authorization
  - authorizationMode
@@ -52,11 +59,11 @@ If you want to use OAuth2 to secure your API, you will have to configure these s
  - username
  - password
 
-More information about these settings can be found in the default config.php file.
-
 Remaining settings that should be configured before you start using RestPHP:
  - returnType: The content type of returned data.
  - clientReturnType: Whether to allow the client to specify the "return_type" parameter.
+
+More information about these settings can be found in the default config.php file.
 
 ## Usage
 You probably want to create an htaccess file which points all requests to a PHP file in which you create your API class.
@@ -100,7 +107,7 @@ spl_autoload_register(function($className) {
 
 // Check for an empty request
 if (!isset($_REQUEST['l'])) {
-	$_REQUEST['l'] = '';
+    $_REQUEST['l'] = '';
 }
 
 // Your API class extending from the BaseAPI
@@ -152,6 +159,51 @@ $configuration = new \RestPHP\Configuration(
 );
 $api = new API($_REQUEST['l'], $configuration);
 ```
+#### Adding a response content type
+Edit the $supportedTypes static array and the $supportedAcceptHeaders static array in the Response class:
+```php
+public static $supportedTypes = array(
+    // Other types...
+    // ...
+    // Adding a new response type
+    'image' => '\\RestPHP\\ResponseTypes\\ImageResponse',
+);
+
+public static $supportedAcceptHeaders = array(
+    // Add any accept headers that should point to the new response type
+    'image/jpeg' => 'image',
+    'image/png' => 'image',
+);
+```
+
+Create a response class in the ResponseTypes folder:
+```php
+namespace RestPHP\ResponseTypes;
+
+class ImageResponse extends \RestPHP\Response {
+    // Default response string
+    protected $response = '';
+
+    // Headers to output when sending this response
+    protected $headers = array(
+        'Content-Type: image/png',
+    );
+
+    // The main method that gets called to transform the data
+    protected function transform($data) {
+        return $this->transformToImage($data);
+    }
+
+    // Logic to transform an array or string of data into an image
+    private function transformToImage($data) {
+        return $data;
+    }
+}
+```
+
+And that's all there is to it. You can now set "image" as your response type in the configuration,
+or let clients specify the "Accept" header and return an image based on that.
+
 
 ### Routes
 The router object allows you to create routes to your methods. It supports the use of regex and supports the following HTTP methods:
@@ -164,10 +216,10 @@ The router object allows you to create routes to your methods. It supports the u
 In the example above we created two routes, one to "/example" and one to "/user/(any number here)". These methods will be called when a GET request is done to these routes.
 
 ## Todo
- - Explain security a bit more
- - Support more HTTP methods
- - Extend unit tests and add code coverage
  - Add support for the HATEOAS constraint (http://restcookbook.com/Basics/hateoas/)
+ - Support more HTTP methods
+ - Explain security a bit more
+ - Extend unit tests and add code coverage
 
 ## Contact
 If you find any bugs, you can create an issue on the issues tab.

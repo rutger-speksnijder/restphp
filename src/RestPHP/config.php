@@ -7,7 +7,6 @@
  *
  * @author Rutger Speksnijder
  * @since RestPHP 1.0.0
- * @version 1.1.0
  * @package RestPHP
  * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE
  */
@@ -40,11 +39,11 @@ return [
 	'password' => '',
 
 	// The return type for the api.
-	// - Valid types are: json, xml, html or text.
+	// - Valid types can be defined in the Response class.
 	// - Any other types will be printed as text with
 	// - content-type header as text/plain.
 	'returnType' => 'json',
 
-	// Whether the return type can be set by the client
+	// Whether the return type can be set by the client using the "Accept" header
 	'clientReturnType' => true,
 ];
