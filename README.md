@@ -64,7 +64,7 @@ If you want to use OAuth2 to secure your API, you will have to configure these s
 
 Remaining settings that should be configured before you start using RestPHP:
  - returnType: The content type of data to return.
- - clientReturnType: Whether to allow the client to specify the "return_type" parameter.
+ - clientReturnType: Whether to allow the client to specify the type of data to return by using the "Accept" header.
 
 More information about these settings can be found in the default config.php file.
 
