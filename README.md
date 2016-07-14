@@ -230,7 +230,7 @@ class ImageResponse extends \RestPHP\Response {
 And that's all there is to it. You can now set "image" as your response type in the configuration,
 or let clients specify the "Accept" header and return an image based on that.
 
-#### HATEOAS
+### HATEOAS
 The RestPHP library supports the HATEOAS constraint.
 In the example above, in the "user" method, we added two hypertext routes.
 Hypertext routes basically tell the client what can be done next after a request (http://restcookbook.com/Basics/hateoas/).
