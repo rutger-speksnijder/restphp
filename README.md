@@ -4,15 +4,15 @@
 [![License](https://poser.pugx.org/rutger/restphp/license)](https://packagist.org/packages/rutger/restphp)
 [![Build Status](https://travis-ci.org/rutger-speksnijder/restphp.svg?branch=master)](https://travis-ci.org/rutger-speksnijder/restphp)
 
-RestPHP is a very basic PHP package for creating RESTful API's. It supports OAuth2 authentication using this package: http://bshaffer.github.io/oauth2-server-php-docs/.
+RestPHP is a basic PHP library for creating RESTful API's. It supports OAuth2 authentication using this library: http://bshaffer.github.io/oauth2-server-php-docs/.
 
-The RestPHP package contains a base class from which can be extended to create API's. The package contains a simple Router class for setting routes for different HTTP methods.
+The RestPHP library contains a base class from which can be extended to create API's. The library contains a simple Router class for setting routes for different HTTP methods.
 
 ## Security
-The package can be configured to use OAuth2 to secure your API. The configuration parameters for this are explained in the "config.php" configuration file. The package used for creating and managing access tokens is located here: http://bshaffer.github.io/oauth2-server-php-docs/. You can google "OAuth2" to get more familiar with how it works.
+The library can be configured to use OAuth2 to secure your API. The configuration parameters for this are explained in the "config.php" configuration file. The library used for creating and managing access tokens is located here: http://bshaffer.github.io/oauth2-server-php-docs/. You can google "OAuth2" to get more familiar with how it works.
 Security can also be turned off if you want to create your own method of authorization, or don't want to secure your API at all.
 
-The base API class uses the same endpoints as described in the tutorial for the package mentioned above (http://bshaffer.github.io/oauth2-server-php-docs/cookbook/), except without the ".php" suffix.
+The base API class uses the same endpoints as described in the tutorial for the library mentioned above (http://bshaffer.github.io/oauth2-server-php-docs/cookbook/), except without the ".php" suffix.
 
 ## Supported content types
 RestPHP can return data in multiple content types. The following types are supported:
@@ -47,10 +47,10 @@ If you want to get the most recent development version:
 ```sh
 composer require rutger/restphp dev-master
 ```
-Or you can download the package and create an autoloader for it (below is an example of how to do this).
+Or you can download the library and create an autoloader for it (below is an example of how to do this).
 
 ## Configuration
-Before you start using RestPHP change the default config.php file located in the package's folder.
+Before you start using RestPHP change the default config.php file located in the library's folder.
 You can also copy this file and place it in another location to create separate configurations for separate API's.
 
 If you want to use OAuth2 to secure your API, you will have to configure these settings:
