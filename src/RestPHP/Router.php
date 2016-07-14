@@ -23,6 +23,9 @@ class Router {
 		'post' => [],
 		'put' => [],
 		'delete' => [],
+		'head' => [],
+		'options' => [],
+		'patch' => [],
 	];
 
 	/**
@@ -171,6 +174,45 @@ class Router {
 	}
 
 	/**
+	 * Head
+	 *
+	 * Adds a route to the router using type "head".
+	 *
+	 * @param @see \RestPHP\Router::add.
+	 *
+	 * @return @see \RestPHP\Router::add.
+	 */
+	public function head($route, $callable) {
+		return $this->add($route, $callable, 'head');
+	}
+
+	/**
+	 * Options
+	 *
+	 * Adds a route to the router using type "options".
+	 *
+	 * @param @see \RestPHP\Router::add.
+	 *
+	 * @return @see \RestPHP\Router::add.
+	 */
+	public function options($route, $callable) {
+		return $this->add($route, $callable, 'options');
+	}
+
+	/**
+	 * Patch
+	 *
+	 * Adds a route to the router using type "patch".
+	 *
+	 * @param @see \RestPHP\Router::add.
+	 *
+	 * @return @see \RestPHP\Router::add.
+	 */
+	public function patch($route, $callable) {
+		return $this->add($route, $callable, 'patch');
+	}
+
+	/**
 	 * Remove
 	 *
 	 * Removes a route.
@@ -185,6 +227,44 @@ class Router {
 			unset($this->routes[$type][$route]);
 		}
 		return $this;
+	}
+
+	/**
+	 * Get methods by route
+	 *
+	 * Returns an array of methods defined for a specific route.
+	 * Useful for an "OPTIONS" request.
+	 *
+	 * @param string $route The route to get the methods from.
+	 *
+	 * @return array An array with methods.
+	 */
+	public function getMethodsByRoute($route) {
+		if (!$route) {
+			return array();
+		}
+
+		// Loop through our routes
+		$methods = array();
+		foreach ($this->routes as $method => $routes) {
+			foreach ($routes as $availableRoute => $callable) {
+				// Check if the available route is the same as the specified route
+				if ($availableRoute === $route) {
+					$methods[] = $method;
+					continue 2;
+				}
+
+				// Check if the route matches
+				$regex = '/^' . str_replace('/', '\/', $availableRoute) . '$/im';
+				if (preg_match($regex, $route) === 1) {
+					$methods[] = $method;
+					continue 2;
+				}
+			}
+		}
+
+		sort($methods);
+		return $methods;
 	}
 
 	/**

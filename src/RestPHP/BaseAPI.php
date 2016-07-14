@@ -206,9 +206,14 @@ abstract class BaseAPI {
                 $this->data = $this->cleanInputs($_GET);
                 break;
             case 'put':
-                // Parse PUT input data
+            case 'patch':
+                // Parse PUT/PATCH input data
                 parse_str(file_get_contents('php://input'), $this->data);
                 $this->data = $this->cleanInputs($this->data);
+                break;
+            case 'head':
+            case 'options':
+                // No data to consume for these request types
                 break;
             default:
                 $this->response = 'Invalid method.';
@@ -402,8 +407,13 @@ abstract class BaseAPI {
         }
 
         try {
-            // Execute the router
-            $this->router->execute($this->request);
+            // Handle OPTIONS requests
+            if ($this->method == 'options') {
+                $this->handleOptionsRequest();
+            } else {
+                // Execute the router
+                $this->router->execute();
+            }
         } catch (\Exception $e) {
             // Set the response and status code to error
             $this->response = ['error' => $e->getMessage()];
@@ -450,6 +460,25 @@ abstract class BaseAPI {
         $value = explode(',', $_SERVER['HTTP_ACCEPT'])[0];
         return (isset(\RestPHP\Response::$supportedAcceptHeaders[$value]) ?
             \RestPHP\Response::$supportedAcceptHeaders[$value] : 'text');
+    }
+
+    /**
+     * Handle options request
+     *
+     * Handles an HTTP OPTIONS requests.
+     * Returns available methods for the current route.
+     *
+     * @return null.
+     */
+    public function handleOptionsRequest() {
+        // Generate the "Allow" header
+        $allow = '';
+        foreach ($this->router->getMethodsByRoute($this->request) as $method) {
+            $allow .= strtoupper($method) . ',';
+        }
+        $allow = substr($allow, 0, strlen($allow) - 1);
+        header('Allow: ' . $allow);
+        $this->setResponse('');
     }
 
     /**
