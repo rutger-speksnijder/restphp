@@ -216,8 +216,8 @@ The router object allows you to create routes to your methods. It supports the u
 In the example above we created two routes, one to "/example" and one to "/user/(any number here)". These methods will be called when a GET request is done to these routes.
 
 ## Todo
+ - Add support for HTTP methods: HEAD, OPTIONS and PATCH
  - Add support for the HATEOAS constraint (http://restcookbook.com/Basics/hateoas/)
- - Support more HTTP methods
  - Add support for accepting different content types (e.g. let clients post xml or json)
  - Add support for caching
  - Explain security a bit more
