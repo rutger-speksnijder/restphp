@@ -34,6 +34,9 @@ RestPHP supports the following HTTP methods:
  - POST
  - PUT
  - DELETE
+ - HEAD
+ - OPTIONS
+ - PATCH
 
 ## Installation
 Install using composer (this will install the latest stable version):
@@ -118,8 +121,18 @@ class API extends \RestPHP\BaseAPI {
     }
 
     public function user($id) {
-        $this->setResponse(array('message' => 'You requested user with id: ' . $id . '.'));
-        $this->setStatusCode(200);
+        if ($this->method == 'get') {
+            $this->setResponse(array('message' => 'You requested user with id: ' . $id . '.'));
+            $this->setStatusCode(200);
+        } elseif ($this->method == 'head') {
+            // Code to check if the user with this id exists
+            $found = false;
+            if ($found) {
+                $this->setStatusCode(200);
+            } else {
+                $this->setStatusCode(404);
+            }
+        }
     }
 }
 
@@ -129,10 +142,18 @@ $api = new API($_REQUEST['l']);
 // Define routes
 $api->getRouter()->get('/example', array($api, 'example'));
 $api->getRouter()->get('/user/([0-9]+)', array($api, 'user'));
+$api->getRouter()->head('/user/([0-9]+)', array($api, 'user'));
 
 // Call the process method
 $api->process();
 ```
+In the example above we created three routes, one to "/example" and two to "/user/(any number here)".
+
+The route to "/example" will return a simple message.
+The route to "/user/(any number here)" will return a message if the request is a GET request.
+If the request to "/user/(any number here)" is a HEAD request, we will check if the user exists and set the status code accordingly. 
+
+HEAD requests can be used to quickly check if a resource exists on a server, without retrieve a response body (http://www.pragmaticapi.com/blog/2013/02/14/restful-patterns-for-the-head-verb).
 
 #### Examples of using a configuration object
 Using a configuration file:
@@ -206,19 +227,21 @@ or let clients specify the "Accept" header and return an image based on that.
 
 
 ### Routes
-The router object allows you to create routes to your methods. It supports the use of regex and supports the following HTTP methods:
+The router object allows you to create routes to your methods. It supports the use of regex and has the following methods:
  - $api->getRouter()->get(): Only execute this method if the request is a GET request.
  - $api->getRouter()->post(): Only execute this method if the request is a POST request.
  - $api->getRouter()->put(): Only execute this method if the request is a PUT request.
  - $api->getRouter()->delete(): Only execute this method if the request is a DELETE request.
+ - $api->getRouter()->head(): Only execute this method if the request is a HEAD request.
+ - $api->getRouter()->options(): Only execute this method if the request is an OPTIONS request*.
+ - $api->getRouter()->patch(): Only execute this method if the request is a PATCH request.
  - $api->getRouter()->add(): Execute this method for any type of request.
 
-In the example above we created two routes, one to "/example" and one to "/user/(any number here)". These methods will be called when a GET request is done to these routes.
+\* By default, you don't have to specify methods for an OPTIONS request. The BaseAPI class will handle these requests and look up all available methods for the requested route. You can disable this by searching in the BaseAPI class for "this->method == 'options'".
 
 ## Todo
- - Add support for HTTP methods: HEAD, OPTIONS and PATCH
  - Add support for the HATEOAS constraint (http://restcookbook.com/Basics/hateoas/)
- - Add support for accepting different content types (e.g. let clients post xml or json)
+ - Add support for accepting different content types (e.g. let clients perform requests with xml or json)
  - Add support for caching
  - Explain security a bit more
  - Extend unit tests and add code coverage
