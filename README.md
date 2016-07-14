@@ -169,6 +169,10 @@ In the example above we created two routes, one to "/example" and one to "/user/
  - Extend unit tests and add code coverage
  - Add support for the HATEOAS constraint (http://restcookbook.com/Basics/hateoas/)
 
+## Contact
+If you find any bugs, you can create an issue on the issues tab.
+If you have any questions feel free to contact me at rutgerspeksnijder@hotmail.com.
+
 ## License
 The MIT License (MIT)
 
