@@ -219,6 +219,7 @@ In the example above we created two routes, one to "/example" and one to "/user/
  - Add support for the HATEOAS constraint (http://restcookbook.com/Basics/hateoas/)
  - Support more HTTP methods
  - Add support for accepting different content types (e.g. let clients post xml or json)
+ - Add support for caching
  - Explain security a bit more
  - Extend unit tests and add code coverage
 
