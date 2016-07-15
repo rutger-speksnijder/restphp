@@ -14,10 +14,10 @@ namespace RestPHP;
 abstract class BaseAPI {
 
     /**
-     * The request.
+     * The request uri.
      * @var string
      */
-    protected $request;
+    protected $uri;
 
     /**
      * The HTTP method this request was made in.
@@ -136,7 +136,7 @@ abstract class BaseAPI {
      * Constructs a new instance of the BaseAPI class.
      * Allows for CORS, assembles and pre-processes the data.
      *
-     * @param string $request The request url.
+     * @param string $uri The request uri.
      * @param optional object $configuration The configuration object.
      *          If this is false, the default config.php file will be used.
      *
@@ -149,18 +149,18 @@ abstract class BaseAPI {
      *
      * @return BaseAPI A new instance of the BaseAPI class.
      */
-    public function __construct($request, $configuration = false) {
+    public function __construct($uri, $configuration = false) {
         // Set headers for cross domain requests
         header('Access-Control-Allow-Origin: *');
         header('Access-Control-Allow-Methods: *');
 
         // Add a preceding slash if necessary
-        if (substr($request, 0, 1) !== '/') {
-            $request = '/' . $request;
+        if (substr($uri, 0, 1) !== '/') {
+            $uri = '/' . $uri;
         }
 
-        // Set the request and the request method
-        $this->request = $request;
+        // Set the request uri and the request method
+        $this->uri = $uri;
         $this->method = strtolower($_SERVER['REQUEST_METHOD']);
 
         // Check for different post methods
@@ -189,7 +189,7 @@ abstract class BaseAPI {
 
         // Set the return type
         if ($this->configuration->getClientReturnType() === true) {
-            $this->returnType = strtolower($this->parseAcceptHeader());
+            $this->returnType = strtolower(\RestPHP\Response::parseAcceptHeader());
         } else {
             $this->returnType = strtolower($this->configuration->getReturnType());
         }
@@ -203,34 +203,20 @@ abstract class BaseAPI {
             }
         }
 
-        // Sanitize request data based on the request method
-        switch ($this->method) {
-            case 'delete':
-            case 'post':
-                $this->data = $this->cleanInputs($_POST);
-                break;
-            case 'get':
-                $this->data = $this->cleanInputs($_GET);
-                break;
-            case 'put':
-            case 'patch':
-                // Parse PUT/PATCH input data
-                parse_str(file_get_contents('php://input'), $this->data);
-                $this->data = $this->cleanInputs($this->data);
-                break;
-            case 'head':
-            case 'options':
-                // No data to consume for these request types
-                break;
-            default:
-                $this->response = 'Invalid method.';
-                $this->statusCode = 405;
-                $this->output(true);
-                break;
+        // Create the request object and get the request data
+        $request = \RestPHP\Request::createRequest();
+        $this->data = $request->getData();
+
+        // Return an error message on invalid method
+        if (!in_array($this->method, ['delete', 'post', 'get', 'put', 'patch', 'head', 'options'])) {
+            $this->response = 'Invalid method.';
+            $this->statusCode = 405;
+            $this->output(true);
+            return;
         }
 
         // Create the router
-        $this->router = new \RestPHP\Router($this->method, $this->request);
+        $this->router = new \RestPHP\Router($this->method, $this->uri);
 
         // Set our own routes
         $this->addRoutes();
@@ -432,8 +418,8 @@ abstract class BaseAPI {
         // HTTP status header
         header("HTTP/1.1 {$this->statusCode} {$this->getStatusMessage($this->statusCode)}");
 
-        // Add the current request to the hypertext routes
-        $this->hypertextRoutes['self'] = $this->request;
+        // Add the current uri to the hypertext routes
+        $this->hypertextRoutes['self'] = $this->uri;
 
         // Create the response object, output the headers and print the response
         $response = \RestPHP\Response::createResponse($this->returnType, $this->response, $this->hypertextRoutes);
@@ -455,8 +441,8 @@ abstract class BaseAPI {
         // Check if we should verify the request
         if ($this->configuration->getUseAuthorization()) {
             if (
-                $this->request != '/token' &&
-                $this->request != '/authorize' &&
+                $this->uri != '/token' &&
+                $this->uri != '/authorize' &&
                 !$this->tokenServer->verifyResourceRequest(\OAuth2\Request::createFromGlobals())
             ) {
                 // Get the data as json and convert it to an array,
@@ -491,44 +477,6 @@ abstract class BaseAPI {
     }
 
     /**
-     * Clean inputs
-     *
-     * Cleans an array with input data.
-     *
-     * @param array $data The input data.
-     *
-     * @return array A sanitized array.
-     */
-    protected function cleanInputs($data) {
-        $cleanInput = [];
-        if (is_array($data)) {
-            foreach ($data as $key => $value) {
-                $cleanInput[$key] = $this->cleanInputs($value);
-            }
-        } else {
-            $cleanInput = trim(strip_tags($data));
-        }
-        return $cleanInput;
-    }
-
-    /**
-     * Parse accept header
-     *
-     * Gets the first value in the accept header
-     * and parses it to a content type.
-     *
-     * @return string The parsed content type.
-     */
-    private function parseAcceptHeader() {
-        if (!isset($_SERVER['HTTP_ACCEPT']) || trim($_SERVER['HTTP_ACCEPT']) == '') {
-            return '';
-        }
-        $value = explode(',', $_SERVER['HTTP_ACCEPT'])[0];
-        return (isset(\RestPHP\Response::$supportedAcceptHeaders[$value]) ?
-            \RestPHP\Response::$supportedAcceptHeaders[$value] : 'text');
-    }
-
-    /**
      * Handle options request
      *
      * Handles an HTTP OPTIONS requests.
@@ -539,7 +487,7 @@ abstract class BaseAPI {
     public function handleOptionsRequest() {
         // Generate the "Allow" header
         $allow = '';
-        foreach ($this->router->getMethodsByRoute($this->request) as $method) {
+        foreach ($this->router->getMethodsByRoute($this->uri) as $method) {
             $allow .= strtoupper($method) . ',';
         }
         $allow = substr($allow, 0, strlen($allow) - 1);

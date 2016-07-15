@@ -82,7 +82,7 @@ class XmlResponse extends \RestPHP\Response {
 
             // Check if the value is an array. If so, generate xml for it.
             if (is_array($v)) {
-                $xml .= "<{$key}>\n{$this->transformToXml($v, $depth+1)}\n</{$key}>\n";
+                $xml .= "<{$key}>\n{$this->transformToXml($v, array(), $depth+1)}\n</{$key}>\n";
             } else {
                 $xml .= "<{$key}>{$v}</{$key}>\n";
             }
@@ -114,7 +114,7 @@ class XmlResponse extends \RestPHP\Response {
         }
 
         // Loop through the routes and add them as links to the xml
-         $xml = '';
+        $xml = '';
         foreach ($routes as $name => $route) {
             $xml .= "<link rel=\"{$name}\" href=\"{$route}\"/>\n";
         }

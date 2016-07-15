@@ -26,7 +26,7 @@ abstract class Response {
     );
 
     /**
-     * Supported accept header.
+     * Supported accept headers.
      * Change this array if you add more response types.
      * @var array
      */
@@ -112,6 +112,18 @@ abstract class Response {
     }
 
     /**
+     * To string
+     *
+     * Method to allow casting the object to string,
+     * returning the response property.
+     *
+     * @return string The response.
+     */
+    final public function __toString() {
+        return $this->response;
+    }
+
+    /**
      * Create response
      *
      * Creates the response according to the specified type.
@@ -123,21 +135,26 @@ abstract class Response {
      * @return object The new response object.
      */
     final public static function createResponse($type, $data, $hypertextRoutes = array()) {
-        if (isset(\RestPHP\Response::$supportedTypes[$type])) {
-            return new \RestPHP\Response::$supportedTypes[$type]($data, $hypertextRoutes);
+        if (isset(self::$supportedTypes[$type])) {
+            return new self::$supportedTypes[$type]($data, $hypertextRoutes);
         }
-        return new \RestPHP\Response::$supportedTypes['text']($data, $hypertextRoutes);
+        return new self::$supportedTypes['text']($data, $hypertextRoutes);
     }
 
     /**
-     * To string
+     * Parse accept header
      *
-     * Method to allow casting the object to string,
-     * returning the response property.
+     * Gets the first value in the accept header
+     * and parses it to a content type.
      *
-     * @return string The response.
+     * @return string The parsed content type.
      */
-    final public function __toString() {
-        return $this->response;
+    final public static function parseAcceptHeader() {
+        if (!isset($_SERVER['HTTP_ACCEPT']) || trim($_SERVER['HTTP_ACCEPT']) == '') {
+            return '';
+        }
+        $value = explode(',', $_SERVER['HTTP_ACCEPT'])[0];
+        return (isset(self::$supportedAcceptHeaders[$value]) ?
+            self::$supportedAcceptHeaders[$value] : 'text');
     }
 }
