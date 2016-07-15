@@ -155,7 +155,7 @@ The route to "/example" will return a simple message.
 The route to "/user/(any number here)" will return a message if the request is a GET request.
 If the request to "/user/(any number here)" is a HEAD request, we will check if the user exists and set the status code accordingly.
 
-HEAD requests can be used to quickly check if a resource exists on a server, without retrieve a response body (http://www.pragmaticapi.com/blog/2013/02/14/restful-patterns-for-the-head-verb).
+HEAD requests can be used to quickly check if a resource exists on a server, without retrieving a response body (http://www.pragmaticapi.com/blog/2013/02/14/restful-patterns-for-the-head-verb).
 
 #### Examples of using a configuration object
 Using a configuration file:
