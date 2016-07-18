@@ -8,8 +8,7 @@ namespace RestPHP;
  *
  * @author Rutger Speksnijder
  * @since RestPHP 1.0.0
- * @package RestPHP
- * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE
+ * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
  */
 class Router {
 
@@ -47,8 +46,6 @@ class Router {
 	 *
 	 * @param string $method The request method.
 	 * @param string $url The request url.
-	 *
-	 * @return \RestPHP\Router The new object.
 	 */
 	public function __construct($method = 'get', $url = '') {
 		$this->method = $method;
@@ -62,7 +59,7 @@ class Router {
 	 *
 	 * @param string $method The method.
 	 *
-	 * @return \RestPHP\Router The current object.
+	 * @return $this The current object.
 	 */
 	public function setMethod($method) {
 		$this->method = strtolower($method);
@@ -87,7 +84,7 @@ class Router {
 	 *
 	 * @param string $url The url.
 	 *
-	 * @return \RestPHP\Router The current object.
+	 * @return $this The current object.
 	 */
 	public function setUrl($url) {
 		$this->url = $url;
@@ -114,7 +111,7 @@ class Router {
 	 * @param callable $callable The method to execute when this route gets called.
 	 * @param string $type The request type to bind this route to.
 	 *
-	 * @return \RestPHP\Router The current object.
+	 * @return $this The current object.
 	 */
 	public function add($route, $callable, $type = 'any') {
 		$this->routes[strtolower($type)][$route] = $callable;
@@ -220,7 +217,7 @@ class Router {
 	 * @param string $route The route to remove.
 	 * @param string $type The request type.
 	 *
-	 * @return \RestPHP\Router The current object.
+	 * @return $this The current object.
 	 */
 	public function remove($route, $type = 'any') {
 		if (isset($this->routes[$type][$route])) {

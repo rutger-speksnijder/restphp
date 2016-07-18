@@ -8,8 +8,7 @@ namespace RestPHP;
  *
  * @author Rutger Speksnijder
  * @since RestPHP 1.0.0
- * @package RestPHP
- * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE
+ * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
  */
 abstract class BaseAPI {
 
@@ -39,6 +38,18 @@ abstract class BaseAPI {
     protected $response = '';
 
     /**
+     * The response type.
+     * @var string
+     */
+    protected $responseType;
+
+    /**
+     * The HTTP status code.
+     * @var int
+     */
+    protected $statusCode = 200;
+
+    /**
      * The hypertext routes the client can follow
      * after the current request.
      * @var array
@@ -46,16 +57,10 @@ abstract class BaseAPI {
     protected $hypertextRoutes = array();
 
     /**
-     * The return type.
-     * @var string
+     * A value indicating whether an error occurred creating the API.
+     * @var boolean
      */
-    protected $returnType;
-
-    /**
-     * The HTTP status code.
-     * @var int
-     */
-    protected $statusCode = 200;
+    protected $error = false;
 
     /**
      * The router for this api.
@@ -146,8 +151,7 @@ abstract class BaseAPI {
      * supplied but is not an instance of \RestPHP\Configuration.
      * @throws Exception Throws an exception if the configuration
      * object can't be created from the default file.
-     *
-     * @return BaseAPI A new instance of the BaseAPI class.
+     * @throws Exception Throws an exception if the response type is invalid.
      */
     public function __construct($uri, $configuration = false) {
         // Set headers for cross domain requests
@@ -175,43 +179,76 @@ abstract class BaseAPI {
         // Check if we have a configuration object
         if ($configuration !== false) {
             if (!($configuration instanceof \RestPHP\Configuration)) {
+                $this->error = true;
                 throw new \Exception("Supplied configuration object is not an instance of \\RestPHP\\Configuration.");
             }
             $this->configuration = $configuration;
         } else {
             // Load from default configuration
             try {
-                $this->configuration = \RestPHP\Configuration::createFromFile(dirname(__FILE__) . '/config.php');
+                $this->configuration = new \RestPHP\Configuration();
+                $this->configuration->createFromFile(dirname(__FILE__) . '/config.php');
             } catch (\Exception $ex) {
+                $this->error = true;
                 throw $ex;
             }
         }
 
-        // Set the return type
-        if ($this->configuration->getClientReturnType() === true) {
-            $this->returnType = strtolower(\RestPHP\Response::parseAcceptHeader());
+        // Create a response factory to validate response types
+        $responseFactory = new \RestPHP\Response\ResponseFactory();
+
+        // Set the response type
+        if ($this->configuration->getClientResponseType() === true) {
+            $this->responseType = strtolower($this->parseAcceptHeader());
+
+            // Fallback to configuration if the client provided an unsopported response type
+            if (!$responseFactory->isSupported($this->responseType)) {
+                $this->responseType = strtolower($this->configuration->getResponseType());
+            }
         } else {
-            $this->returnType = strtolower($this->configuration->getReturnType());
+            $this->responseType = strtolower($this->configuration->getResponseType());
+        }
+
+        // Check the response type
+        if (!$responseFactory->isSupported($this->responseType)) {
+            // Throw
+            $this->error = true;
+            throw new \Exception("No supported response type found.");
         }
 
         // Create the token server if necessary
         if ($this->configuration->getUseAuthorization()) {
             try {
-                $this->tokenServer = \RestPHP\BaseAPI::createTokenServer($this->configuration);
+                $this->createTokenServer();
             } catch (\Exception $ex) {
+                $this->error = true;
                 throw $ex;
             }
         }
 
+        // Create the request factory and get the request type
+        $requestFactory = new \RestPHP\Request\RequestFactory();
+        $requestType = $this->parseContentTypeHeader();
+
+        // Check if the request type is a supported request type
+        if (!$requestFactory->isSupported($requestType)) {
+            // Show an error
+            $this->response = array('error' => 1, 'message' => 'Unsupported request type.');
+            $this->statusCode = 415;
+            $this->output(true);
+            $this->error = true;
+            return;
+        }
+
         // Create the request object and get the request data
-        $request = \RestPHP\Request::createRequest();
-        $this->data = $request->getData();
+        $this->data = (new \RestPHP\Request\RequestFactory())->build($requestType)->getData();
 
         // Return an error message on invalid method
         if (!in_array($this->method, ['delete', 'post', 'get', 'put', 'patch', 'head', 'options'])) {
-            $this->response = 'Invalid method.';
+            $this->response = array('error' => 1, 'message' => 'Invalid method.');
             $this->statusCode = 405;
             $this->output(true);
+            $this->error = true;
             return;
         }
 
@@ -223,28 +260,28 @@ abstract class BaseAPI {
     }
 
     /**
-     * Set return type
+     * Set response type
      *
-     * Sets the return type.
+     * Sets the response type.
      *
-     * @param string $returnType The return type.
+     * @param string $responseType The response type.
      *
-     * @return \RestPHP\BaseAPI The current object.
+     * @return $this The current object.
      */
-    public function setReturnType($returnType) {
-        $this->returnType = strtolower($returnType);
+    public function setResponseType($responseType) {
+        $this->responseType = strtolower($responseType);
         return $this;
     }
 
     /**
-     * Get return type
+     * Get response type
      *
-     * Gets the return type.
+     * Gets the response type.
      *
-     * @return string The return type.
+     * @return string The response type.
      */
-    public function getReturnType() {
-        return $this->returnType;
+    public function getResponseType() {
+        return $this->responseType;
     }
 
     /**
@@ -254,7 +291,7 @@ abstract class BaseAPI {
      *
      * @param mixed $response The response.
      *
-     * @return \RestPHP\BaseAPI The current object.
+     * @return $this The current object.
      */
     public function setResponse($response) {
         $this->response = $response;
@@ -281,7 +318,7 @@ abstract class BaseAPI {
      *
      * @throws Exception Throws an exception when an invalid status code is used.
      *
-     * @return \RestPHP\BaseAPI The current object.
+     * @return $this The current object.
      */
     public function setStatusCode($statusCode) {
         $statusCode = (int)$statusCode;
@@ -356,7 +393,7 @@ abstract class BaseAPI {
      *
      * @param array $hypertextRoutes The array with hypertext routes.
      *
-     * @return \RestPHP\BaseAPI The current object.
+     * @return $this The current object.
      */
     public function setHypertextRoutes($hypertextRoutes) {
         $this->hypertextRoutes = $hypertextRoutes;
@@ -370,7 +407,7 @@ abstract class BaseAPI {
      *
      * @param string $name The hypertext route's name.
      *
-     * @return \RestPHP\BaseAPI The current object.
+     * @return $this The current object.
      */
     public function removeHypertextRoute($name) {
         if (isset($this->hypertextRoutes[$name])) {
@@ -387,11 +424,51 @@ abstract class BaseAPI {
      * @param string $name The hypertext route's name.
      * @param string $route The route.
      *
-     * @return \RestPHP\BaseAPI The current object.
+     * @return $this The current object.
      */
     public function addHypertextRoute($name, $route) {
         $this->hypertextRoutes[$name] = $route;
         return $this;
+    }
+
+    /**
+     * Has error
+     *
+     * Returns the value of the error property.
+     *
+     * @return boolean The error property's value.
+     */
+    public function hasError() {
+        return $this->error;
+    }
+
+    /**
+     * Parse content type header
+     *
+     * Parses the content type header.
+     *
+     * @return string The parsed content type.
+     */
+    protected function parseContentTypeHeader() {
+        if (!isset($_SERVER['CONTENT_TYPE']) || trim($_SERVER['CONTENT_TYPE']) == '') {
+            return '';
+        }
+        return explode(';', $_SERVER['CONTENT_TYPE'])[0];
+    }
+
+    /**
+     * Parse accept header
+     *
+     * Gets the first value in the accept header
+     * and parses it to a content type.
+     *
+     * @return string The parsed content type.
+     */
+    protected function parseAcceptHeader() {
+        if (!isset($_SERVER['HTTP_ACCEPT']) || trim($_SERVER['HTTP_ACCEPT']) == '') {
+            return '';
+        }
+        return explode(',', $_SERVER['HTTP_ACCEPT'])[0];
     }
 
     /**
@@ -402,7 +479,7 @@ abstract class BaseAPI {
      *
      * @param optional boolean $isFinal Whether this output is final or not.
      *
-     * @return \RestPHP\BaseAPI The current object.
+     * @return $this The current object.
      */
     public function output($isFinal = false) {
         // Check if final output is true
@@ -422,7 +499,11 @@ abstract class BaseAPI {
         $this->hypertextRoutes['self'] = $this->uri;
 
         // Create the response object, output the headers and print the response
-        $response = \RestPHP\Response::createResponse($this->returnType, $this->response, $this->hypertextRoutes);
+        $response = (new \RestPHP\Response\ResponseFactory())->build(
+            $this->responseType,
+            $this->response,
+            $this->hypertextRoutes
+        );
         $response->outputHeaders();
         echo $response;
 
@@ -435,7 +516,7 @@ abstract class BaseAPI {
      *
      * Processes the API by calling the execute method on the router.
      *
-     * @return \RestPHP\BaseAPI The current object.
+     * @return $this The current object.
      */
     public function process() {
         // Check if we should verify the request
@@ -468,7 +549,7 @@ abstract class BaseAPI {
             }
         } catch (\Exception $e) {
             // Set the response and status code to error
-            $this->response = ['error' => $e->getMessage()];
+            $this->response = ['error' => 1, 'message' => $e->getMessage()];
             $this->statusCode = 500;
         }
 
@@ -482,7 +563,7 @@ abstract class BaseAPI {
      * Handles an HTTP OPTIONS requests.
      * Returns available methods for the current route.
      *
-     * @return null.
+     * @return void.
      */
     public function handleOptionsRequest() {
         // Generate the "Allow" header
@@ -501,7 +582,7 @@ abstract class BaseAPI {
      * Adds default routes for the API regarding tokens.
      * These routes can be overridden in the child API class.
      *
-     * @return \RestPHP\BaseAPI The current object.
+     * @return $this The current object.
      */
     protected function addRoutes() {
         // Define a "not found" route
@@ -530,46 +611,40 @@ abstract class BaseAPI {
      * Creates the new token server.
      * Sets the connection to the database and grant types.
      *
-     * @param optional object $configuration Whether to load
-     *  settings from a configuration object.
-     * @param optional string $dsn The data source name.
-     * @param optional string $username The database username.
-     * @param optional string $password The database password.
-     *
      * @throws @see OAuth2 package.
      *
-     * @return \OAuth2\Server A new instance of the OAuth2 Server class.
+     * @return self The current object.
      */
-    public static function createTokenServer($configuration = false, $dsn = '', $username = '', $password = '') {
-        // Set variables from the configuration object
-        if ($configuration && ($configuration instanceof \RestPHP\Configuration)) {
-            $dsn = $configuration->getDsn();
-            $username = $configuration->getUsername();
-            $password = $configuration->getPassword();
-        }
-
+    private function createTokenServer() {
         // Catch errors for pdo object creation and creating the server
         try {
             // Create the server
-            $storage = new \OAuth2\Storage\Pdo(['dsn' => $dsn, 'username' => $username, 'password' => $password]);
+            $storage = new \OAuth2\Storage\Pdo(
+                [
+                    'dsn' => $this->configuration->getDsn(),
+                    'username' => $this->configuration->getUsername(),
+                    'password' => $this->configuration->getPassword(),
+                ]
+            );
             $server = new \OAuth2\Server($storage);
 
             // Add grant types
-            if ($configuration->getAuthorizationMode() === 1) {
+            if ($this->configuration->getAuthorizationMode() === 1) {
                 $server->addGrantType(new \OAuth2\GrantType\ClientCredentials($storage));
-            } elseif ($configuration->getAuthorizationMode() === 2) {
+            } elseif ($this->configuration->getAuthorizationMode() === 2) {
                 $server->addGrantType(new \OAuth2\GrantType\AuthorizationCode($storage));
-            } elseif ($configuration->getAuthorizationMode() === 3) {
+            } elseif ($this->configuration->getAuthorizationMode() === 3) {
                 $server->addGrantType(new \OAuth2\GrantType\ClientCredentials($storage));
                 $server->addGrantType(new \OAuth2\GrantType\AuthorizationCode($storage));
             } else {
-                throw new \Exception("Unknown authorization mode: \"{$configuration->getAuthorizationMode()}\".");
+                throw new \Exception("Unknown authorization mode: \"{$this->configuration->getAuthorizationMode()}\".");
             }
         } catch (\Exception $ex) {
             throw $ex;
         }
 
-        return $server;
+        $this->tokenServer = $server;
+        return $this;
     }
 
     /**
@@ -600,7 +675,7 @@ abstract class BaseAPI {
      *
      * Handles authorizing clients to receive an OAuth2 access token.
      *
-     * @return \RestPHP\BaseAPI The current object, unless the user gets redirected.
+     * @return $this The current object, unless the user gets redirected.
      */
     public function authorize() {
         // Create the request and response objects
@@ -629,7 +704,7 @@ abstract class BaseAPI {
             $form = ob_get_clean();
             $this->response = $form;
             $this->statusCode = 200;
-            $this->returnType = 'html';
+            $this->responseType = 'text/html';
             $this->output(true);
             return $this;
         }

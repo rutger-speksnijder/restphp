@@ -1,17 +1,16 @@
 <?php
-namespace RestPHP\ResponseTypes;
+namespace RestPHP\Response\Types;
 
 /**
- * Xml Response
+ * Xml
  *
  * Class to transform and show the response in xml format.
  *
  * @author Rutger Speksnijder
- * @since RestPHP 1.2.0
- * @package RestPHP/ResponseTypes
- * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE
+ * @since RestPHP 2.0.0
+ * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
  */
-class XmlResponse extends \RestPHP\Response {
+class Xml extends \RestPHP\Response\Response {
 
     /**
      * The response string.

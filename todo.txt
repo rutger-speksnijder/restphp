@@ -1,0 +1,6 @@
+Uitleg geven over nieuwe dingen.
+Return type in config moet nu mime type zijn. Moet altijd ingevuld zijn, is nu fallback ipv text/plain.
+
+Token server testen met nieuwe createTokenServer en request/response stuff
+
+Unittests uitproberen

@@ -6,8 +6,7 @@
  *
  * @author Rutger Speksnijder
  * @since RestPHP 1.0.0
- * @package RestPHP
- * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE
+ * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
  */
 ?>
 <form method="POST">

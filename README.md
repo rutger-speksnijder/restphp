@@ -4,24 +4,40 @@
 [![License](https://poser.pugx.org/rutger/restphp/license)](https://packagist.org/packages/rutger/restphp)
 [![Build Status](https://travis-ci.org/rutger-speksnijder/restphp.svg?branch=master)](https://travis-ci.org/rutger-speksnijder/restphp)
 
-RestPHP is a basic PHP library for creating RESTful API's. It supports OAuth2 authentication using this library: http://bshaffer.github.io/oauth2-server-php-docs/.
+RestPHP is a PHP library for creating RESTful API's.
+It supports OAuth2 authentication using this library: http://bshaffer.github.io/oauth2-server-php-docs/.
 
-The RestPHP library contains a base class from which can be extended to create API's. The library contains a simple Router class for setting routes for different HTTP methods.
+The RestPHP library contains a base class from which can be extended to create API's.
+The library contains a simple Router class for setting routes for different HTTP methods.
 
 ## Security
-The library can be configured to use OAuth2 to secure your API. The configuration parameters for this are explained in the "config.php" configuration file. The library used for creating and managing access tokens is located here: http://bshaffer.github.io/oauth2-server-php-docs/. You can google "OAuth2" to get more familiar with how it works.
+The library can be configured to use OAuth2 to secure your API.
+The configuration parameters for this are explained in the "config.php" configuration file.
+The library used for creating and managing access tokens is located here: http://bshaffer.github.io/oauth2-server-php-docs/.
+You can google "OAuth2" to get more familiar with how it works.
+
 Security can also be turned off if you want to create your own method of authorization, or don't want to secure your API at all.
 
 The base API class uses the same endpoints as described in the tutorial for the library mentioned above (http://bshaffer.github.io/oauth2-server-php-docs/cookbook/), except without the ".php" suffix.
 
-## Supported content types
+## Supported request content types
+RestPHP can accept data in multiple content types. The following types are supported:
+ - Form URL encoded data
+ - GET data
+ - JSON
+ - XML
+
+You can add support for other content types by editing the Request Factory class and adding a new content type.
+More on that below under usage.
+
+## Supported response content types
 RestPHP can return data in multiple content types. The following types are supported:
  - JSON
  - XML
  - HTML
  - Plain text
 
-You can add support for other content types by editing the array in the Response class and adding a class for your content type.
+You can add support for other content types by editing the Response Factory class and adding a new content type.
 More on that below under usage.
 
 You can also let the client decide which type of content should be returned.
@@ -47,7 +63,7 @@ If you want to get the most recent development version:
 ```sh
 composer require rutger/restphp dev-master
 ```
-Or you can download the library and create an autoloader for it (below is an example of how to do this).
+Or you can download the library from github.
 
 ## Configuration
 Before you start using RestPHP change the default config.php file located in the library's folder.
@@ -63,8 +79,8 @@ If you want to use OAuth2 to secure your API, you will have to configure these s
  - password
 
 Remaining settings that should be configured before you start using RestPHP:
- - returnType: The content type of data to return.
- - clientReturnType: Whether to allow the client to specify the type of data to return by using the "Accept" header.
+ - responseType: The content type of response data.
+ - clientResponseType: Whether to allow the client to specify the type of response data by using the "Accept" header.
 
 More information about these settings can be found in the default config.php file.
 
@@ -90,23 +106,8 @@ An example of this:
 error_reporting(-1);
 ini_set('display_errors', 'On');
 
-// Autoloader example if you're not using composer
-spl_autoload_register(function($className) {
-    $className = ltrim($className, '\\');
-    $fileName  = '';
-    $namespace = '';
-    if ($lastNsPos = strrpos($className, '\\')) {
-        $namespace = substr($className, 0, $lastNsPos);
-        $className = substr($className, $lastNsPos + 1);
-        $fileName  = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
-    }
-    $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
-
-    require $fileName;
-});
-
-// Composer:
-// require 'vendor/autoload.php';
+// Autoloader
+require 'vendor/autoload.php';
 
 // Check for an empty request
 if (!isset($_REQUEST['l'])) {
@@ -141,13 +142,18 @@ class API extends \RestPHP\BaseAPI {
 // Create the API using the default configuration file
 $api = new API($_REQUEST['l']);
 
-// Define routes
-$api->getRouter()->get('/example', array($api, 'example'));
-$api->getRouter()->get('/user/([0-9]+)', array($api, 'user'));
-$api->getRouter()->head('/user/([0-9]+)', array($api, 'user'));
+// Check if no errors occurred during creation
+// If errors did occur they must be fixed before the API will work.
+// The errors are most likely OAuth2 related.
+if (!$api->hasError()) {
+    // Define routes
+    $api->getRouter()->get('/example', array($api, 'example'));
+    $api->getRouter()->get('/user/([0-9]+)', array($api, 'user'));
+    $api->getRouter()->head('/user/([0-9]+)', array($api, 'user'));
 
-// Call the process method
-$api->process();
+    // Call the process method
+    $api->process();
+}
 ```
 In the example above we created three routes, one to "/example" and two to "/user/(any number here)".
 
@@ -162,7 +168,7 @@ Using a configuration file:
 ```php
 <?php
 // Create the API using a different configuration file
-$configuration = \RestPHP\Configuration::createFromFile('config.php');
+$configuration = (new \RestPHP\Configuration)->createFromFile('config.php');
 $api = new API($_REQUEST['l'], $configuration);
 ```
 Creating the object:
@@ -177,12 +183,38 @@ $configuration = new \RestPHP\Configuration(
     $dsn = false,
     $username = false,
     $password = false,
-    $returnType = 'html',
-    $clientReturnType = true
+    $responseType = 'text/html',
+    $clientResponseType = true
 );
 $api = new API($_REQUEST['l'], $configuration);
 ```
+
+#### Adding a request content type
+Edit the Request Factory class and add the content type to the construct method:
+```php
+public function __construct() {
+    $this->types = array(
+        // Other types...
+        // Adding a new request type
+        'image/png' => __NAMESPACE__ . '\\Types\\Image'
+    );
+}
+```
+
+Create the request type in the Types directory in the Request directory.
+```php
+namespace RestPHP\Request\Types;
+
+class Image extends \RestPHP\Request\Request {
+
+}
+```
+
+
+
 #### Adding a response content type
+Edit the
+
 Edit the $supportedTypes static array and the $supportedAcceptHeaders static array in the Response class:
 ```php
 public static $supportedTypes = array(
@@ -251,11 +283,11 @@ The router object allows you to create routes to your methods. It supports the u
  - $api->getRouter()->patch(): Only execute this method if the request is a PATCH request.
  - $api->getRouter()->add(): Execute this method for any type of request.
 
-\* By default, you don't have to specify methods for an OPTIONS request. The BaseAPI class will handle these requests and look up all available methods for the requested route. You can disable this by searching in the BaseAPI class for "this->method == 'options'".
+\* By default, you don't have to specify methods for an OPTIONS request.
+The BaseAPI class will handle these requests and look up all available methods for the requested route.
+You can disable this by searching in the BaseAPI class for "this->method == 'options'".
 
 ## Todo
- - Add support for accepting different content types (e.g. let clients perform requests with xml or json)
- - Add support for caching
  - Explain security a bit more
  - Extend unit tests and add code coverage
 

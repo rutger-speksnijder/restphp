@@ -1,6 +1,2 @@
 composer.lock
-.htaccess
-index.php
 vendor/
-config.php
-test.php

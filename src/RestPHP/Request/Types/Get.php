@@ -1,17 +1,16 @@
 <?php
-namespace RestPHP\RequestTypes;
+namespace RestPHP\Request\Types;
 
 /**
- * Get Request
+ * Get
  *
  * Class to transform GET data into an array.
  *
  * @author Rutger Speksnijder
- * @since RestPHP 1.5.0
- * @package RestPHP/RequestTypes
- * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE
+ * @since RestPHP 2.0.0
+ * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
  */
-class GetRequest extends \RestPHP\Request {
+class Get extends \RestPHP\Request\Request {
 
     /**
      * The request data.
