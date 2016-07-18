@@ -190,7 +190,9 @@ $api = new API($_REQUEST['l'], $configuration);
 ```
 
 #### Adding a request content type
+
 Edit the Request Factory class and add the content type to the construct method:
+
 ```php
 public function __construct() {
     $this->types = array(
@@ -202,44 +204,49 @@ public function __construct() {
 ```
 
 Create the request type in the Types directory in the Request directory.
+
 ```php
 namespace RestPHP\Request\Types;
 
 class Image extends \RestPHP\Request\Request {
 
+    // Default data
+    protected $data = array();
+
+    // Method to transform the image into an array of data
+    protected function transform() {
+        return $data;
+    }
 }
 ```
 
-
+This is enough to allow clients to execute requests with images.
 
 #### Adding a response content type
-Edit the
 
-Edit the $supportedTypes static array and the $supportedAcceptHeaders static array in the Response class:
+Edit the Response Factory class and add the content type to the construct method:
+
 ```php
-public static $supportedTypes = array(
-    // Other types...
-    // ...
-    // Adding a new response type
-    'image' => '\\RestPHP\\ResponseTypes\\ImageResponse',
-);
-
-public static $supportedAcceptHeaders = array(
-    // Add any accept headers that should point to the new response type
-    'image/jpeg' => 'image',
-    'image/png' => 'image',
-);
+public function __construct() {
+    $this->types = array(
+        // Other types...
+        // Adding a new response type
+        'image/png' => __NAMESPACE__ . '\\Types\\Image',
+    );
+}
 ```
 
-Create a response class in the ResponseTypes folder:
-```php
-namespace RestPHP\ResponseTypes;
+Create the response type in the Types directory in the Response directory.
 
-class ImageResponse extends \RestPHP\Response {
-    // Default response string
+```php
+namespace RestPHP\Response\Types;
+
+class Image extends \RestPHP\Response\Response {
+
+    // Default response
     protected $response = '';
 
-    // Headers to output when sending this response
+    // The headers to output for this response
     protected $headers = array(
         'Content-Type: image/png',
     );
@@ -259,7 +266,7 @@ class ImageResponse extends \RestPHP\Response {
 }
 ```
 
-And that's all there is to it. You can now set "image" as your response type in the configuration,
+And that's all there is to it. You can now set "image/png" as your response type in the configuration,
 or let clients specify the "Accept" header and return an image based on that.
 
 ### HATEOAS
