@@ -1,2 +1,7 @@
 composer.lock
 vendor/
+.htaccess
+config.php
+index.php
+test.php
+todo.txt
