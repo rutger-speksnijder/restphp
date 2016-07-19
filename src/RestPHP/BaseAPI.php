@@ -64,7 +64,7 @@ abstract class BaseAPI {
 
     /**
      * The router for this api.
-     * @var \RestPHP\Router
+     * @var \SimpleRoute\Router
      */
     protected $router;
 
@@ -253,7 +253,7 @@ abstract class BaseAPI {
         }
 
         // Create the router
-        $this->router = new \RestPHP\Router($this->method, $this->uri);
+        $this->router = new \SimpleRoute\Router($this->method, $this->uri);
 
         // Set our own routes
         $this->addRoutes();
@@ -369,7 +369,7 @@ abstract class BaseAPI {
      *
      * Returns the router object.
      *
-     * @return \RestPHP\Router The router object.
+     * @return \SimpleRoute\Router The router object.
      */
     public function getRouter() {
         return $this->router;

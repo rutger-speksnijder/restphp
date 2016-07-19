@@ -63,7 +63,7 @@ If you want to get the most recent development version:
 ```sh
 composer require rutger/restphp dev-master
 ```
-Or you can download the library from github.
+Or you can download the library from github. Make sure to also download the SimpleRoute and OAuth2 package.
 
 ## Configuration
 Before you start using RestPHP change the default config.php file located in the library's folder.
@@ -293,6 +293,8 @@ The router object allows you to create routes to your methods. It supports the u
 \* By default, you don't have to specify methods for an OPTIONS request.
 The BaseAPI class will handle these requests and look up all available methods for the requested route.
 You can disable this by searching in the BaseAPI class for "this->method == 'options'".
+
+See https://www.github.com/rutger-speksnijder/simpleroute for more information on the router.
 
 ## Todo
  - Explain security a bit more
