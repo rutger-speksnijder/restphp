@@ -5,14 +5,14 @@ use \RestPHP\Configuration;
 
 class ConfigurationTest extends \PHPUnit_Framework_TestCase {
 
-    public function testCanLoadFromFile() {
+    public function testCanCreateFromFile() {
         $c = new Configuration();
-        $c->loadFromFile('../src/RestPHP/config.php');
+        $c->createFromFile('../src/RestPHP/config.php');
     }
 
-    public function testCanNotLoadFromInvalidFile() {
+    public function testCanNotCreateFromInvalidFile() {
         $this->setExpectedException('Exception');
         $c = new Configuration();
-        $c->loadFromFile('non_existing_configuration_file.php');
+        $c->createFromFile('non_existing_configuration_file.php');
     }
 }
