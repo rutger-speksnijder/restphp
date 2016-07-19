@@ -7,7 +7,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase {
 
     public function testCanCreateFromFile() {
         $c = new Configuration();
-        $c->createFromFile(dirname(__DIR__) . '/vendor/rutger/RestPHP/config.php');
+        $c->createFromFile(dirname(__DIR__) . '/vendor/rutger/restphp/src/RestPHP/config.php');
     }
 
     public function testCanNotCreateFromInvalidFile() {
