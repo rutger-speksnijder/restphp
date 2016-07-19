@@ -488,12 +488,12 @@ abstract class BaseAPI {
         }
         $this->finalOutput = $isFinal;
 
+        // HTTP status header
+        header("HTTP/1.1 {$this->statusCode} {$this->getStatusMessage($this->statusCode)}");
+
         // Disable caching
         header("Cache-Control: no-cache, must-revalidate");
         header("Expires: 0");
-
-        // HTTP status header
-        header("HTTP/1.1 {$this->statusCode} {$this->getStatusMessage($this->statusCode)}");
 
         // Add the current uri to the hypertext routes
         $this->hypertextRoutes['self'] = $this->uri;
