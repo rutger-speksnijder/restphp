@@ -2,16 +2,14 @@
 namespace RestPHP\Response\Types;
 
 /**
- * Xml
- *
  * Class to transform and show the response in xml format.
  *
  * @author Rutger Speksnijder
  * @since RestPHP 2.0.0
  * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
  */
-class Xml extends \RestPHP\Response\Response {
-
+class Xml extends \RestPHP\Response\Response
+{
     /**
      * The response string.
      * @var string
@@ -27,8 +25,6 @@ class Xml extends \RestPHP\Response\Response {
     );
 
     /**
-     * Transform
-     *
      * Transforms the data into an xml response.
      *
      * @param mixed $data The data to transform.
@@ -36,13 +32,12 @@ class Xml extends \RestPHP\Response\Response {
      *
      * @return string The transformed response.
      */
-    protected function transform($data, $hypertextRoutes = array()) {
+    protected function transform($data, $hypertextRoutes = array())
+    {
         return $this->transformToXml($data, $hypertextRoutes);
     }
 
     /**
-     * Transform to xml
-     *
      * Recursively converts the response into an xml string.
      *
      * @param mixed $data The data to transform.
@@ -50,7 +45,8 @@ class Xml extends \RestPHP\Response\Response {
      *
      * @return string The response as an xml string.
      */
-     private function transformToXml($data = [], $hypertextRoutes = array(), $depth = 0) {
+     private function transformToXml($data = [], $hypertextRoutes = array(), $depth = 0)
+     {
         // Set the xml string
         $xml = '';
 
@@ -98,15 +94,14 @@ class Xml extends \RestPHP\Response\Response {
     }
 
     /**
-     * Get hypertext xml
-     *
      * Generates the xml for the hypertext routes.
      *
      * @param optional array $routes The hypertext routes.
      *
      * @return string The hypertext routes xml string.
      */
-    private function getHypertextXml($routes = array()) {
+    private function getHypertextXml($routes = array())
+    {
         // Check if we have routes
         if (!$routes) {
             return '';

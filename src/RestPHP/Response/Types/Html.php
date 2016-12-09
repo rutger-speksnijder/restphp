@@ -2,16 +2,14 @@
 namespace RestPHP\Response\Types;
 
 /**
- * Html
- *
  * Class to transform and show the response in html format.
  *
  * @author Rutger Speksnijder
  * @since RestPHP 2.0.0
  * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
  */
-class Html extends \RestPHP\Response\Response {
-
+class Html extends \RestPHP\Response\Response
+{
     /**
      * The response string.
      * @var string
@@ -27,8 +25,6 @@ class Html extends \RestPHP\Response\Response {
     );
 
     /**
-     * Transform
-     *
      * Transforms the data into an html response.
      *
      * @param mixed $data The data to transform.
@@ -36,13 +32,12 @@ class Html extends \RestPHP\Response\Response {
      *
      * @return string The transformed response.
      */
-    protected function transform($data, $hypertextRoutes = array()) {
+    protected function transform($data, $hypertextRoutes = array())
+    {
         return $this->transformToHtml($data, $hypertextRoutes);
     }
 
     /**
-     * Transform to html
-     *
      * Recursively converts the response into an html string.
      * This is an html string with tables and underlying tables.
      *
@@ -51,7 +46,8 @@ class Html extends \RestPHP\Response\Response {
      *
      * @return string The response as an html string.
      */
-    private function transformToHtml($data, $hypertextRoutes = array()) {
+    private function transformToHtml($data, $hypertextRoutes = array())
+    {
         // Generate the html for the hypertext routes
         $hypertextHtml = $this->getHypertextHtml($hypertextRoutes);
 
@@ -78,15 +74,14 @@ class Html extends \RestPHP\Response\Response {
     }
 
     /**
-     * Get hypertext html
-     *
      * Generates the html for the hypertext routes.
      *
      * @param optional array $routes The hypertext routes.
      *
      * @return string The hypertext routes html table.
      */
-    private function getHypertextHtml($routes = array()) {
+    private function getHypertextHtml($routes = array())
+    {
         // Check if we have routes
         if (!$routes) {
             return '';

@@ -2,16 +2,14 @@
 namespace RestPHP\Response\Types;
 
 /**
- * Json
- *
  * Class to transform and show the response in json format.
  *
  * @author Rutger Speksnijder
  * @since RestPHP 2.0.0
  * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
  */
-class Json extends \RestPHP\Response\Response {
-
+class Json extends \RestPHP\Response\Response
+{
     /**
      * The response string.
      * @var string
@@ -27,8 +25,6 @@ class Json extends \RestPHP\Response\Response {
     );
 
     /**
-     * Transform
-     *
      * Transforms the data into a json response.
      *
      * @param mixed $data The data to transform.
@@ -36,7 +32,8 @@ class Json extends \RestPHP\Response\Response {
      *
      * @return string The transformed response.
      */
-    protected function transform($data, $hypertextRoutes = array()) {
+    protected function transform($data, $hypertextRoutes = array())
+    {
         $links = $this->getHypertextJson($hypertextRoutes);
         if ($links && is_array($data)) {
             $data['_links'] = $links;
@@ -47,15 +44,14 @@ class Json extends \RestPHP\Response\Response {
     }
 
     /**
-     * Get hypertext json
-     *
      * Transforms the hypertext routes into an array for the json string.
      *
      * @param array $routes The hypertext routes.
      *
      * @return array An array of links for the json string.
      */
-    private function getHypertextJson($routes = array()) {
+    private function getHypertextJson($routes = array())
+    {
         if (!$routes) {
             return false;
         }

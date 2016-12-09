@@ -115,13 +115,16 @@ if (!isset($_REQUEST['l'])) {
 }
 
 // Your API class extending from the BaseAPI
-class API extends \RestPHP\BaseAPI {
-    public function example() {
+class API extends \RestPHP\BaseAPI
+{
+    public function example()
+    {
         $this->setResponse(array('message' => 'This is an example message!'));
         $this->setStatusCode(200);
     }
 
-    public function user($id) {
+    public function user($id)
+    {
         if ($this->method == 'get') {
             $this->setResponse(array('message' => 'You requested user with id: ' . $id . '.'));
             $this->setStatusCode(200);
@@ -194,7 +197,8 @@ $api = new API($_REQUEST['l'], $configuration);
 Edit the Request Factory class and add the content type to the construct method:
 
 ```php
-public function __construct() {
+public function __construct()
+{
     $this->types = array(
         // Other types...
         // Adding a new request type
@@ -208,8 +212,8 @@ Create the request type in the Types directory in the Request directory.
 ```php
 namespace RestPHP\Request\Types;
 
-class Image extends \RestPHP\Request\Request {
-
+class Image extends \RestPHP\Request\Request
+{
     // Default data
     protected $data = array();
 
@@ -227,7 +231,8 @@ This is enough to allow clients to execute requests with images.
 Edit the Response Factory class and add the content type to the construct method:
 
 ```php
-public function __construct() {
+public function __construct()
+{
     $this->types = array(
         // Other types...
         // Adding a new response type
@@ -241,8 +246,8 @@ Create the response type in the Types directory in the Response directory.
 ```php
 namespace RestPHP\Response\Types;
 
-class Image extends \RestPHP\Response\Response {
-
+class Image extends \RestPHP\Response\Response
+{
     // Default response
     protected $response = '';
 
@@ -252,7 +257,8 @@ class Image extends \RestPHP\Response\Response {
     );
 
     // The main method that gets called to transform the data
-    protected function transform($data, $hypertextRoutes = array()) {
+    protected function transform($data, $hypertextRoutes = array())
+    {
         return $this->transformToImage($data, $hypertextRoutes);
     }
 
@@ -260,7 +266,8 @@ class Image extends \RestPHP\Response\Response {
     //
     // Make sure to also transform the hypertext routes into the appropriate format
     // An example of this can be found in the other response type classes
-    private function transformToImage($data, $hypertextRoutes = array()) {
+    private function transformToImage($data, $hypertextRoutes = array())
+    {
         return array_merge($data, $hypertextRoutes);
     }
 }

@@ -2,16 +2,14 @@
 namespace RestPHP\Response;
 
 /**
- * Response Interface
- *
  * The interface implemented by the Response class.
  *
  * @author Rutger Speksnijder
  * @since RestPHP 2.0.0
  * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
  */
-interface ResponseInterface {
-
+interface ResponseInterface
+{
     /**
      * Get response
      *

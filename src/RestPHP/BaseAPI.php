@@ -2,16 +2,14 @@
 namespace RestPHP;
 
 /**
- * Base API
- *
  * Base abstract class to extend from when creating API's.
  *
  * @author Rutger Speksnijder
  * @since RestPHP 1.0.0
  * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
  */
-abstract class BaseAPI {
-
+abstract class BaseAPI
+{
     /**
      * The request uri.
      * @var string
@@ -54,7 +52,7 @@ abstract class BaseAPI {
      * after the current request.
      * @var array
      */
-    protected $hypertextRoutes = array();
+    protected $hypertextRoutes = [];
 
     /**
      * A value indicating whether an error occurred creating the API.
@@ -136,8 +134,6 @@ abstract class BaseAPI {
     ];
 
     /**
-     * Construct
-     *
      * Constructs a new instance of the BaseAPI class.
      * Allows for CORS, assembles and pre-processes the data.
      *
@@ -153,7 +149,8 @@ abstract class BaseAPI {
      * object can't be created from the default file.
      * @throws Exception Throws an exception if the response type is invalid.
      */
-    public function __construct($uri, $configuration = false) {
+    public function __construct($uri, $configuration = false)
+    {
         // Set headers for cross domain requests
         header('Access-Control-Allow-Origin: *');
         header('Access-Control-Allow-Methods: *');
@@ -260,58 +257,52 @@ abstract class BaseAPI {
     }
 
     /**
-     * Set response type
-     *
      * Sets the response type.
      *
      * @param string $responseType The response type.
      *
      * @return $this The current object.
      */
-    public function setResponseType($responseType) {
+    public function setResponseType($responseType)
+    {
         $this->responseType = strtolower($responseType);
         return $this;
     }
 
     /**
-     * Get response type
-     *
      * Gets the response type.
      *
      * @return string The response type.
      */
-    public function getResponseType() {
+    public function getResponseType()
+    {
         return $this->responseType;
     }
 
     /**
-     * Set response
-     *
      * Sets the response.
      *
      * @param mixed $response The response.
      *
      * @return $this The current object.
      */
-    public function setResponse($response) {
+    public function setResponse($response)
+    {
         $this->response = $response;
         return $this;
     }
 
     /**
-     * Get response
-     *
      * Gets the response.
      *
      * @return mixed The response.
      */
-    public function getResponse() {
+    public function getResponse()
+    {
         return $this->response;
     }
 
     /**
-     * Set status code
-     *
      * Sets the status code.
      *
      * @param int $statusCode The status code.
@@ -320,7 +311,8 @@ abstract class BaseAPI {
      *
      * @return $this The current object.
      */
-    public function setStatusCode($statusCode) {
+    public function setStatusCode($statusCode)
+    {
         $statusCode = (int)$statusCode;
         if ($statusCode < 100 || $statusCode >= 600) {
             throw new \Exception("Invalid status code: {$statusCode}.");
@@ -330,86 +322,82 @@ abstract class BaseAPI {
     }
 
     /**
-     * Get status code
-     *
      * Gets the status code.
      *
      * @return int The status code.
      */
-    public function getStatusCode() {
+    public function getStatusCode()
+    {
         return $this->statusCode;
     }
 
     /**
-     * Get status message
-     *
      * Gets the HTTP status message for a status code.
      *
      * @param int $code The status code.
      *
      * @return string The http status.
      */
-    protected function getStatusMessage($code) {
-        return (isset($this->statusMessages[$code]) ? $this->statusMessages[$code] : $this->statusMessages[500]);
+    protected function getStatusMessage($code)
+    {
+        return (
+            isset($this->statusMessages[$code])
+                ? $this->statusMessages[$code] : $this->statusMessages[500]
+        );
     }
 
     /**
-     * Get configuration
-     *
      * Gets the configuration object.
      *
      * @return \RestPHP\Configuration The configuration object.
      */
-    public function getConfiguration() {
+    public function getConfiguration()
+    {
         return $this->configuration;
     }
 
     /**
-     * Get router
-     *
      * Returns the router object.
      *
      * @return \SimpleRoute\Router The router object.
      */
-    public function getRouter() {
+    public function getRouter()
+    {
         return $this->router;
     }
 
     /**
-     * Get hypertext routes
-     *
      * Gets the hypertext routes.
      *
      * @return array The hypertext routes.
      */
-    public function getHypertextRoutes() {
+    public function getHypertextRoutes()
+    {
         return $this->hypertextRoutes;
     }
 
     /**
-     * Set hypertext routes
-     *
      * Sets the hypertext routes.
      *
      * @param array $hypertextRoutes The array with hypertext routes.
      *
      * @return $this The current object.
      */
-    public function setHypertextRoutes($hypertextRoutes) {
+    public function setHypertextRoutes($hypertextRoutes)
+    {
         $this->hypertextRoutes = $hypertextRoutes;
         return $this;
     }
 
     /**
-     * Remove hypertext route
-     *
      * Removes a hypertext route by name.
      *
      * @param string $name The hypertext route's name.
      *
      * @return $this The current object.
      */
-    public function removeHypertextRoute($name) {
+    public function removeHypertextRoute($name)
+    {
         if (isset($this->hypertextRoutes[$name])) {
             unset($this->hypertextRoutes[$name]);
         }
@@ -417,8 +405,6 @@ abstract class BaseAPI {
     }
 
     /**
-     * Add hypertext route
-     *
      * Adds a hypertext route.
      *
      * @param string $name The hypertext route's name.
@@ -426,30 +412,29 @@ abstract class BaseAPI {
      *
      * @return $this The current object.
      */
-    public function addHypertextRoute($name, $route) {
+    public function addHypertextRoute($name, $route)
+    {
         $this->hypertextRoutes[$name] = $route;
         return $this;
     }
 
     /**
-     * Has error
-     *
      * Returns the value of the error property.
      *
      * @return boolean The error property's value.
      */
-    public function hasError() {
+    public function hasError()
+    {
         return $this->error;
     }
 
     /**
-     * Parse content type header
-     *
      * Parses the content type header.
      *
      * @return string The parsed content type.
      */
-    protected function parseContentTypeHeader() {
+    protected function parseContentTypeHeader()
+    {
         if (!isset($_SERVER['CONTENT_TYPE']) || trim($_SERVER['CONTENT_TYPE']) == '') {
             return '';
         }
@@ -457,14 +442,13 @@ abstract class BaseAPI {
     }
 
     /**
-     * Parse accept header
-     *
      * Gets the first value in the accept header
      * and parses it to a content type.
      *
      * @return string The parsed content type.
      */
-    protected function parseAcceptHeader() {
+    protected function parseAcceptHeader()
+    {
         if (!isset($_SERVER['HTTP_ACCEPT']) || trim($_SERVER['HTTP_ACCEPT']) == '') {
             return '';
         }
@@ -472,8 +456,6 @@ abstract class BaseAPI {
     }
 
     /**
-     * Output
-     *
      * Outputs the current response in the correct response type
      * and sets the headers.
      *
@@ -481,7 +463,8 @@ abstract class BaseAPI {
      *
      * @return $this The current object.
      */
-    public function output($isFinal = false) {
+    public function output($isFinal = false)
+    {
         // Check if final output is true
         if ($this->finalOutput) {
             return;
@@ -512,13 +495,12 @@ abstract class BaseAPI {
     }
 
     /**
-     * Process
-     *
      * Processes the API by calling the execute method on the router.
      *
      * @return $this The current object.
      */
-    public function process() {
+    public function process()
+    {
         // Check if we should verify the request
         if ($this->configuration->getUseAuthorization()) {
             if (
@@ -558,14 +540,13 @@ abstract class BaseAPI {
     }
 
     /**
-     * Handle options request
-     *
      * Handles an HTTP OPTIONS requests.
      * Returns available methods for the current route.
      *
      * @return void.
      */
-    public function handleOptionsRequest() {
+    public function handleOptionsRequest()
+    {
         // Generate the "Allow" header
         $allow = '';
         foreach ($this->router->getMethodsByRoute($this->uri) as $method) {
@@ -577,14 +558,13 @@ abstract class BaseAPI {
     }
 
     /**
-     * Add routes
-     *
      * Adds default routes for the API regarding tokens.
      * These routes can be overridden in the child API class.
      *
      * @return $this The current object.
      */
-    protected function addRoutes() {
+    protected function addRoutes()
+    {
         // Define a "not found" route
         $this->router->add('', function() {
             $this->setResponse(array('error' => 1, 'message' => 'Unknown endpoint.'));
@@ -606,8 +586,6 @@ abstract class BaseAPI {
     }
 
     /**
-     * Create token server
-     *
      * Creates the new token server.
      * Sets the connection to the database and grant types.
      *
@@ -615,7 +593,8 @@ abstract class BaseAPI {
      *
      * @return self The current object.
      */
-    private function createTokenServer() {
+    private function createTokenServer()
+    {
         // Catch errors for pdo object creation and creating the server
         try {
             // Create the server
@@ -648,13 +627,12 @@ abstract class BaseAPI {
     }
 
     /**
-     * Token
-     *
      * Handles generating tokens for clients.
      *
-     * @return mixed The result of requesting a token.
+     * @return $this The current object.
      */
-    public function token() {
+    public function token()
+    {
         // Handle the token request
         $response = $this->tokenServer->handleTokenRequest(\OAuth2\Request::createFromGlobals());
 
@@ -671,13 +649,12 @@ abstract class BaseAPI {
     }
 
     /**
-     * Authorize
-     *
      * Handles authorizing clients to receive an OAuth2 access token.
      *
      * @return $this The current object, unless the user gets redirected.
      */
-    public function authorize() {
+    public function authorize()
+    {
         // Create the request and response objects
         $request = \OAuth2\Request::createFromGlobals();
         $response = new \OAuth2\Response();

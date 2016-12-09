@@ -2,16 +2,14 @@
 namespace RestPHP;
 
 /**
- * Configuration
- *
  * Configuration class for API's created with the BaseAPI class.
  *
  * @author Rutger Speksnijder
  * @since RestPHP 1.1.0
  * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
  */
-class Configuration {
-
+class Configuration
+{
     /**
      * A value indicating whether to use authorization for this api.
      * @var boolean
@@ -81,8 +79,6 @@ class Configuration {
     private $clientResponseType;
 
     /**
-     * Construct
-     *
      * Constructs a new instance of the Configuration class.
      *
      * @param boolean $useAuthorization A value indicating whether to use authorization for this api.
@@ -95,14 +91,13 @@ class Configuration {
      * @param string $password The database password.
      * @param string $responseType The type of response data.
      * @param boolean $clientResponseType A value indicating whether to allow the client to set the response type.
-     *
-     * @throws Exception Throws an exception if authorization is enabled but no data source is set.
      */
     public function __construct($useAuthorization = null, $authorizationMode = null,
         $redirectAuthorization = null, $authorizationForm = null,
         $dsn = null, $username = null, $password = null,
         $responseType = null, $clientResponseType = null
-    ) {
+    )
+    {
         $this->useAuthorization = $useAuthorization;
         $this->authorizationMode = $authorizationMode;
         $this->redirectAuthorization = $redirectAuthorization;
@@ -115,8 +110,6 @@ class Configuration {
     }
 
     /**
-     * Create from file
-     *
      * Creates a configuration object by loading the parameters from a file.
      * This file has to be a PHP file returning an array with the parameters.
      *
@@ -124,11 +117,11 @@ class Configuration {
      *
      * @throws Exception Throws an exception if the file can't be found.
      * @throws Exception Throws an exception if the file could not be included.
-     * @throws Exception Throws an exception if the configuration object could not be created.
      *
      * @return $this The current object.
      */
-    public function createFromFile($file) {
+    public function createFromFile($file)
+    {
         // Check if the file exists
         if (!$file || !file_exists($file)) {
             throw new \Exception("Configuration file \"{$file}\" could not be found.");
@@ -155,226 +148,208 @@ class Configuration {
     }
 
     /**
-     * Get use authorization
-     *
      * Gets use authorization.
      *
      * @return boolean The use authorization value.
      */
-    public function getUseAuthorization() {
+    public function getUseAuthorization()
+    {
         return $this->useAuthorization;
     }
 
     /**
-     * Set use authorization
-     *
      * Sets use authorization.
      *
      * @param boolean $useAuthorization The value indicating whether to use authorization.
      *
      * @return $this The current object.
      */
-    public function setUseAuthorization($useAuthorization) {
+    public function setUseAuthorization($useAuthorization)
+    {
         $this->useAuthorization = $useAuthorization;
         return $this;
     }
 
     /**
-     * Get authorization mode
-     *
      * Gets the authorization mode.
      *
      * @return int The authorization mode.
      */
-    public function getAuthorizationMode() {
+    public function getAuthorizationMode()
+    {
         return $this->authorizationMode;
     }
 
     /**
-     * Set authorization mode
-     *
      * Sets the authorization mode.
      *
      * @param int $authorizationMode The authorization mode.
      *
      * @return $this The current object.
      */
-    public function setAuthorizationMode($authorizationMode) {
+    public function setAuthorizationMode($authorizationMode)
+    {
         $this->authorizationMode = $authorizationMode;
         return $this;
     }
 
     /**
-     * Get redirect authorization
-     *
      * Gets the redirect authorization value.
      *
      * @return boolean The redirect authorization value.
      */
-    public function getRedirectAuthorization() {
+    public function getRedirectAuthorization()
+    {
         return $this->redirectAuthorization;
     }
 
     /**
-     * Set redirect authorization
-     *
      * Sets the redirect authorization value.
      *
      * @param boolean $redirectAuthorization The redirect authorization value.
      *
      * @return $this The current object.
      */
-    public function setRedirectAuthorization($redirectAuthorization) {
+    public function setRedirectAuthorization($redirectAuthorization)
+    {
         $this->redirectAuthorization = $redirectAuthorization;
         return $this;
     }
 
     /**
-     * Get authorization form
-     *
      * Gets the authorization form value.
      *
      * @return string The authorization form value.
      */
-    public function getAuthorizationForm() {
+    public function getAuthorizationForm()
+    {
         return $this->authorizationForm;
     }
 
     /**
-     * Set authorization form
-     *
      * Sets the authorization form file.
      *
      * @param string $authorizationForm The authorization form file.
      *
      * @return $this The current object.
      */
-    public function setAuthorizationForm($authorizationForm) {
+    public function setAuthorizationForm($authorizationForm)
+    {
         $this->authorizationForm = $authorizationForm;
         return $this;
     }
 
     /**
-     * Get dsn
-     *
      * Gets the data source name.
      *
      * @return string The dsn.
      */
-    public function getDsn() {
+    public function getDsn()
+    {
         return $this->dsn;
     }
 
     /**
-     * Set dsn
-     *
      * Sets the data source name.
      *
      * @param string $dsn The dsn.
      *
      * @return $this The current object.
      */
-    public function setDsn($dsn) {
+    public function setDsn($dsn)
+    {
         $this->dsn = $dsn;
         return $this;
     }
 
     /**
-     * Get username
-     *
      * Gets the database username.
      *
      * @return string The username.
      */
-    public function getUsername() {
+    public function getUsername()
+    {
         return $this->username;
     }
 
     /**
-     * Set username
-     *
      * Sets the database username.
      *
      * @param string $username The username.
      *
      * @return $this The current object.
      */
-    public function setUsername($username) {
+    public function setUsername($username)
+    {
         $this->username = $username;
         return $this;
     }
 
     /**
-     * Get password
-     *
      * Gets the database password.
      *
      * @return string The password.
      */
-    public function getPassword() {
+    public function getPassword()
+    {
         return $this->password;
     }
 
     /**
-     * Set password
-     *
      * Sets the database password.
      *
      * @param string $password The password.
      *
      * @return $this The current object.
      */
-    public function setPassword($password) {
+    public function setPassword($password)
+    {
         $this->password = $password;
         return $this;
     }
 
     /**
-     * Get response type
-     *
      * Gets the response type.
      *
      * @return string The response type.
      */
-    public function getResponseType() {
+    public function getResponseType()
+    {
         return $this->responseType;
     }
 
     /**
-     * Set response type
-     *
      * Sets the response type.
      *
      * @param string $responseType The response type.
      *
      * @return $this The current object.
      */
-    public function setReturnType($responseType) {
+    public function setReturnType($responseType)
+    {
         $this->responseType = $responseType;
         return $this;
     }
 
     /**
-     * Get client response type
-     *
      * Gets the client response type value.
      *
      * @return boolean The client response type.
      */
-    public function getClientResponseType() {
+    public function getClientResponseType()
+    {
         return $this->clientResponseType;
     }
 
     /**
-     * Set client response type
-     *
      * Sets the client response type value.
      *
      * @param boolean $clientResponseType The client response type value.
      *
      * @return $this The current object.
      */
-    public function setClientResponseType($clientResponseType) {
+    public function setClientResponseType($clientResponseType)
+    {
         $this->clientResponseType = $clientResponseType;
         return $this;
     }

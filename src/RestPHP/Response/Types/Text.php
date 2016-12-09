@@ -2,16 +2,14 @@
 namespace RestPHP\Response\Types;
 
 /**
- * Text
- *
  * Class to transform and show the response in text format.
  *
  * @author Rutger Speksnijder
  * @since RestPHP 2.0.0
  * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
  */
-class Text extends \RestPHP\Response\Response {
-
+class Text extends \RestPHP\Response\Response
+{
     /**
      * The response string.
      * @var string
@@ -27,8 +25,6 @@ class Text extends \RestPHP\Response\Response {
     );
 
     /**
-     * Transform
-     *
      * Transforms the data into a text response.
      *
      * @param mixed $data The data to transform.
@@ -36,13 +32,12 @@ class Text extends \RestPHP\Response\Response {
      *
      * @return string The transformed response.
      */
-    protected function transform($data, $hypertextRoutes = array()) {
+    protected function transform($data, $hypertextRoutes = array())
+    {
         return $this->transformToText($data, $hypertextRoutes);
     }
 
     /**
-     * Transform to text
-     *
      * Recursively converts the response into a text string.
      *
      * @param mixed $data The data to transform.
@@ -50,7 +45,8 @@ class Text extends \RestPHP\Response\Response {
      *
      * @return string The response as a text string.
      */
-    private function transformToText($data, $hypertextRoutes = array(), $depth = 0) {
+    private function transformToText($data, $hypertextRoutes = array(), $depth = 0)
+    {
         // Return the data as string if it's not an array
         if (!is_array($data)) {
             return "{$data}\n{$this->getHypertextString($hypertextRoutes)}";
@@ -78,15 +74,14 @@ class Text extends \RestPHP\Response\Response {
     }
 
     /**
-     * Get hypertext string
-     *
      * Transforms the hypertext routes into a string.
      *
      * @param array $routes The hypertext routes.
      *
      * @return string The hypertext routes transformed into a string.
      */
-    private function getHypertextString($routes = array()) {
+    private function getHypertextString($routes = array())
+    {
         // Check if we have routes
         if (!$routes) {
             return '';

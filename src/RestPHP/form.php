@@ -1,7 +1,5 @@
 <?php
 /**
- * Form
- *
  * Default form to use for the "/authorize" endpoint.
  *
  * @author Rutger Speksnijder
