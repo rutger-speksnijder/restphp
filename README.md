@@ -11,7 +11,7 @@ The RestPHP library contains a base class from which can be extended to create A
 The library contains a simple Router class for setting routes for different HTTP methods.
 
 ## Todo
- * Request type text/plain toevoegen voor GET, want DELETE heeft content-type text/plain.
+ * Request type text/plain for GET
 
 ## Security
 The library can be configured to use OAuth2 to secure your API.
