@@ -10,6 +10,9 @@ It supports OAuth2 authentication using this library: http://bshaffer.github.io/
 The RestPHP library contains a base class from which can be extended to create API's.
 The library contains a simple Router class for setting routes for different HTTP methods.
 
+## Todo
+ * Request type text/plain toevoegen voor GET, want DELETE heeft content-type text/plain.
+
 ## Security
 The library can be configured to use OAuth2 to secure your API.
 The configuration parameters for this are explained in the "config.php" configuration file.
