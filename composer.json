@@ -15,7 +15,7 @@
     "require": {
         "php": ">=5.4.0",
         "bshaffer/oauth2-server-php": "~1.8",
-        "rutger/simpleroute"
+        "rutger/simpleroute": "1.0"
     },
     "autoload": {
         "psr-0": {
