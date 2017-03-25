@@ -10,9 +10,6 @@ It supports OAuth2 authentication using this library: http://bshaffer.github.io/
 The RestPHP library contains a base class from which can be extended to create API's.
 The library contains a simple Router class for setting routes for different HTTP methods.
 
-## Todo
- * Request type text/plain for GET
-
 ## Security
 The library can be configured to use OAuth2 to secure your API.
 The configuration parameters for this are explained in the "config.php" configuration file.
@@ -56,6 +53,8 @@ RestPHP supports the following HTTP methods:
  - HEAD
  - OPTIONS
  - PATCH
+
+It also supports overriding request methods using the HTTP_X_HTTP_METHOD_OVERRIDE or HTTP_X_HTTP_METHOD headers.
 
 ## Installation
 Install using composer (this will install the latest stable version):
@@ -317,7 +316,7 @@ If you have any questions feel free to contact me at rutgerspeksnijder@hotmail.c
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2016 Rutger Speksnijder
+Copyright (c) 2017 Rutger Speksnijder
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

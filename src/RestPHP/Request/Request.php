@@ -4,26 +4,24 @@ namespace RestPHP\Request;
 /**
  * Abstract class to extend from when creating request types.
  *
- * @author Rutger Speksnijder
- * @since RestPHP 2.0.0
- * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
+ * @author Rutger Speksnijder.
+ * @since RestPHP 1.0.
+ * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT.
  */
 abstract class Request implements \RestPHP\Request\RequestInterface
 {
     /**
      * The request data.
-     * @var array
+     * @var array.
      */
     protected $data = array();
 
     /**
-     * Constructs the new request class
-     * and sets the data property to the
-     * transformed and cleaned data.
+     * Constructs the new request class and sanitizes the data.
      */
     final public function __construct()
     {
-        $this->data = $this->cleanInputs($this->transform());
+        $this->data = $this->sanitize($this->transform());
     }
 
     /**
@@ -45,22 +43,23 @@ abstract class Request implements \RestPHP\Request\RequestInterface
     }
 
     /**
-     * Cleans an array with input data.
+     * Sanitizes an array with data.
      *
      * @param array $data The input data.
      *
      * @return array A sanitized array.
      */
-    final protected function cleanInputs($data)
+    final protected function sanitize($data)
     {
-        $cleanInput = [];
+        // Recursively loop through the data array and return the sanitized data
+        $sanitized = [];
         if (is_array($data)) {
             foreach ($data as $key => $value) {
-                $cleanInput[$key] = $this->cleanInputs($value);
+                $sanitized[$key] = $this->sanitize($value);
             }
         } else {
-            $cleanInput = trim(strip_tags($data));
+            $sanitized = trim(strip_tags($data));
         }
-        return $cleanInput;
+        return $sanitized;
     }
 }

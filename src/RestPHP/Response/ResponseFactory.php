@@ -4,15 +4,15 @@ namespace RestPHP\Response;
 /**
  * Factory for creating a response object.
  *
- * @author Rutger Speksnijder
- * @since RestPHP 2.0.0
- * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
+ * @author Rutger Speksnijder.
+ * @since RestPHP 1.0.
+ * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT.
  */
 class ResponseFactory
 {
     /**
      * The array with accepted content types.
-     * @var array
+     * @var array.
      */
     private $types;
 
@@ -23,13 +23,17 @@ class ResponseFactory
     public function __construct()
     {
         $this->types = array(
-            'text/html' => __NAMESPACE__ . '\\Types\\Html',
+            // HTML
+            'text/html' => __NAMESPACE__ . '\\Types\\HTML',
 
-            'text/xml' => __NAMESPACE__ . '\\Types\\Xml',
-            'application/xml' => __NAMESPACE__ . '\\Types\\Xml',
+            // XML
+            'text/xml' => __NAMESPACE__ . '\\Types\\XML',
+            'application/xml' => __NAMESPACE__ . '\\Types\\XML',
 
-            'application/json' => __NAMESPACE__ . '\\Types\\Json',
+            // JSON
+            'application/json' => __NAMESPACE__ . '\\Types\\JSON',
 
+            // Plain text
             'text/plain' => __NAMESPACE__ . '\\Types\\Text',
         );
     }

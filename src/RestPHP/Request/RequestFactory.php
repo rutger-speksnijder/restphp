@@ -4,15 +4,15 @@ namespace RestPHP\Request;
 /**
  * Factory for creating a request object.
  *
- * @author Rutger Speksnijder
- * @since RestPHP 2.0.0
- * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
+ * @author Rutger Speksnijder.
+ * @since RestPHP 1.0.
+ * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT.
  */
 class RequestFactory
 {
     /**
      * The array with accepted content types.
-     * @var array
+     * @var array.
      */
     private $types;
 
@@ -23,14 +23,19 @@ class RequestFactory
     public function __construct()
     {
         $this->types = array(
-            '' => __NAMESPACE__ . '\\Types\\Get',
+            // GET
+            '' => __NAMESPACE__ . '\\Types\\GET',
+            'text/plain' => __NAMESPACE__ . '\\Types\\GET',
 
+            // Form url encoded
             'application/x-www-form-urlencoded' => __NAMESPACE__ . '\\Types\\FormUrlEncoded',
 
-            'text/xml' => __NAMESPACE__ . '\\Types\\Xml',
-            'application/xml' => __NAMESPACE__ . '\\Types\\Xml',
+            // XML
+            'text/xml' => __NAMESPACE__ . '\\Types\\XML',
+            'application/xml' => __NAMESPACE__ . '\\Types\\XML',
 
-            'application/json' => __NAMESPACE__ . '\\Types\\Json',
+            // JSON
+            'application/json' => __NAMESPACE__ . '\\Types\\JSON',
         );
     }
 

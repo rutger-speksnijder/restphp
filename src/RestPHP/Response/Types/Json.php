@@ -2,23 +2,23 @@
 namespace RestPHP\Response\Types;
 
 /**
- * Class to transform and show the response in json format.
+ * Class to transform and show the response in JSON format.
  *
- * @author Rutger Speksnijder
- * @since RestPHP 2.0.0
- * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
+ * @author Rutger Speksnijder.
+ * @since RestPHP 1.0.
+ * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT.
  */
-class Json extends \RestPHP\Response\Response
+class JSON extends \RestPHP\Response\Response
 {
     /**
      * The response string.
-     * @var string
+     * @var string.
      */
     protected $response = '';
 
     /**
      * The headers for this particular response type.
-     * @var array
+     * @var array.
      */
     protected $headers = array(
         'Content-Type: application/json',

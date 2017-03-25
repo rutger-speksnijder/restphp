@@ -4,21 +4,21 @@ namespace RestPHP\Response;
 /**
  * Abstract class to extend from when creating response types.
  *
- * @author Rutger Speksnijder
- * @since RestPHP 2.0.0
- * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
+ * @author Rutger Speksnijder.
+ * @since RestPHP 1.0.
+ * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT.
  */
 abstract class Response implements \RestPHP\Response\ResponseInterface
 {
     /**
      * The response string.
-     * @var string
+     * @var string.
      */
     protected $response = '';
 
     /**
      * The headers to send for this particular response type.
-     * @var array
+     * @var array.
      */
     protected $headers = array();
 

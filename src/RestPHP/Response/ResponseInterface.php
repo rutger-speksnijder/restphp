@@ -4,15 +4,13 @@ namespace RestPHP\Response;
 /**
  * The interface implemented by the Response class.
  *
- * @author Rutger Speksnijder
- * @since RestPHP 2.0.0
- * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
+ * @author Rutger Speksnijder.
+ * @since RestPHP 1.0.
+ * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT.
  */
 interface ResponseInterface
 {
     /**
-     * Get response
-     *
      * Gets the response.
      *
      * @return string The response.
@@ -20,8 +18,6 @@ interface ResponseInterface
     function getResponse();
 
     /**
-     * Output headers
-     *
      * This method will output the headers set in the headers array.
      *
      * @return object The current object.
@@ -29,8 +25,6 @@ interface ResponseInterface
     function outputHeaders();
 
     /**
-     * To string
-     *
      * Method to allow casting the object to string,
      * returning the response property.
      *

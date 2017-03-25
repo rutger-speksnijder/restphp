@@ -4,15 +4,15 @@ namespace RestPHP\Request\Types;
 /**
  * Class to transform JSON data into an array.
  *
- * @author Rutger Speksnijder
- * @since RestPHP 2.0.0
- * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
+ * @author Rutger Speksnijder.
+ * @since RestPHP 1.0.
+ * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT.
  */
-class Json extends \RestPHP\Request\Request
+class JSON extends \RestPHP\Request\Request
 {
     /**
      * The request data.
-     * @var array
+     * @var array.
      */
     protected $data = array();
 

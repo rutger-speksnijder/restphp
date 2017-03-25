@@ -2,9 +2,9 @@
 /**
  * Default form to use for the "/authorize" endpoint.
  *
- * @author Rutger Speksnijder
- * @since RestPHP 1.0.0
- * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
+ * @author Rutger Speksnijder.
+ * @since RestPHP 1.0.
+ * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT.
  */
 ?>
 <form method="POST">

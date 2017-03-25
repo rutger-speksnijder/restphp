@@ -4,84 +4,84 @@ namespace RestPHP;
 /**
  * Base abstract class to extend from when creating API's.
  *
- * @author Rutger Speksnijder
- * @since RestPHP 1.0.0
- * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT
+ * @author Rutger Speksnijder.
+ * @since RestPHP 1.0.
+ * @license https://github.com/rutger-speksnijder/restphp/blob/master/LICENSE MIT.
  */
 abstract class BaseAPI
 {
     /**
      * The request uri.
-     * @var string
+     * @var string.
      */
     protected $uri;
 
     /**
      * The HTTP method this request was made in.
      * Valid methods are get, post, put or delete.
-     * @var string
+     * @var string.
      */
     protected $method;
 
     /**
      * The data sent by the request.
-     * @var array
+     * @var array.
      */
     protected $data = [];
 
     /**
      * The response from the api.
-     * @var mixed
+     * @var mixed.
      */
     protected $response = '';
 
     /**
      * The response type.
-     * @var string
+     * @var string.
      */
     protected $responseType;
 
     /**
      * The HTTP status code.
-     * @var int
+     * @var int.
      */
     protected $statusCode = 200;
 
     /**
      * The hypertext routes the client can follow
      * after the current request.
-     * @var array
+     * @var array.
      */
     protected $hypertextRoutes = [];
 
     /**
      * A value indicating whether an error occurred creating the API.
-     * @var boolean
+     * @var boolean.
      */
     protected $error = false;
 
     /**
      * The router for this api.
-     * @var \SimpleRoute\Router
+     * @var \SimpleRoute\Router.
      */
     protected $router;
 
     /**
      * The token server for OAuth2 authorization.
-     * @var \OAuth2\Server
+     * @var \OAuth2\Server.
      */
     protected $tokenServer;
 
     /**
      * A value indicating whether the output is final.
      * Blocks the api from outputting twice.
-     * @var boolean
+     * @var boolean.
      */
     protected $finalOutput = false;
 
     /**
      * The configuration object for this api.
-     * @var \RestPHP\Configuration
+     * @var \RestPHP\Configuration.
      */
     protected $configuration;
 
@@ -153,7 +153,8 @@ abstract class BaseAPI
     {
         // Set headers for cross domain requests
         header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Methods: *');
+        header('Access-Control-Allow-Methods: GET,POST,PUT,DELETE,HEAD,OPTIONS,PATCH');
+        header('Access-Control-Allow-Headers: Content-Type');
 
         // Add a preceding slash if necessary
         if (substr($uri, 0, 1) !== '/') {
@@ -162,14 +163,17 @@ abstract class BaseAPI
 
         // Set the request uri and the request method
         $this->uri = $uri;
-        $this->method = strtolower($_SERVER['REQUEST_METHOD']);
+        $this->method = 'get';
 
-        // Check for different post methods
-        if ($this->method == 'post' && isset($_SERVER['HTTP_X_HTTP_METHOD'])) {
-            if ($_SERVER['HTTP_X_HTTP_METHOD'] == 'DELETE') {
-                $this->method = 'delete';
-            } elseif ($_SERVER['HTTP_X_HTTP_METHOD'] == 'PUT') {
-                $this->method = 'put';
+        // Check if the request method is set
+        if (isset($_SERVER['REQUEST_METHOD'])) {
+            $this->method = strtolower($_SERVER['REQUEST_METHOD']);
+
+            // Check if an override method is set
+            if ($this->method == 'post' && isset($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'])) {
+                $this->method = strtolower($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE']);
+            } elseif ($this->method == 'post' && isset($_SERVER['HTTP_X_HTTP_METHOD'])) {
+                $this->method = strtolower($_SERVER['HTTP_X_HTTP_METHOD']);
             }
         }
 
@@ -566,7 +570,7 @@ abstract class BaseAPI
     protected function addRoutes()
     {
         // Define a "not found" route
-        $this->router->add('', function() {
+        $this->router->add('/', function() {
             $this->setResponse(array('error' => 1, 'message' => 'Unknown endpoint.'));
             $this->setStatusCode(404);
         });
@@ -687,8 +691,8 @@ abstract class BaseAPI
         }
 
         // Print the authorization code if the user has authorized your client
-        $is_authorized = ($this->data['authorized'] === 'yes');
-        $this->tokenServer->handleAuthorizeRequest($request, $response, $is_authorized);
+        $isAuthorized = ($this->data['authorized'] === 'yes');
+        $this->tokenServer->handleAuthorizeRequest($request, $response, $isAuthorized);
 
         // Check if the request was successful
         if ($response->getStatusCode() === 302) {
