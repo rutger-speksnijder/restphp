@@ -121,24 +121,23 @@ class API extends \RestPHP\BaseAPI
 {
     public function example()
     {
-        $this->setResponse(array('message' => 'This is an example message!'));
-        $this->setStatusCode(200);
+        $this->response = ['message' => 'This is an example message!'];
+        $this->statusCode = 200;
     }
 
     public function user($id)
     {
         if ($this->method == 'get') {
-            $this->setResponse(array('message' => 'You requested user with id: ' . $id . '.'));
-            $this->setStatusCode(200);
+            $this->response = ['message' => 'You requested user with id: ' . $id . '.'];
+            $this->statusCode = 200;
             $this->addHypertextRoute('connect', "/user/{$id}/connect");
             $this->addHypertextRoute('disconnect', "/user/{$id}/disconnect");
         } elseif ($this->method == 'head') {
             // Code to check if the user with this id exists
             $found = false;
-            if ($found) {
-                $this->setStatusCode(200);
-            } else {
-                $this->setStatusCode(404);
+            $this->statusCode = 200;
+            if (!$found) {
+                $this->statusCode = 404;
             }
         }
     }

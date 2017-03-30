@@ -254,7 +254,7 @@ abstract class BaseAPI
         }
 
         // Create the router
-        $this->router = new \SimpleRoute\Router($this->method, $this->uri);
+        $this->router = new \SimpleRoute\Router($this->uri);
 
         // Set our own routes
         $this->addRoutes();
@@ -570,10 +570,7 @@ abstract class BaseAPI
     protected function addRoutes()
     {
         // Define a "not found" route
-        $this->router->add('/', function() {
-            $this->setResponse(array('error' => 1, 'message' => 'Unknown endpoint.'));
-            $this->setStatusCode(404);
-        });
+        $this->router->add('/', [$this, 'unknownEndpoint']);
 
         // Only add these routes if we're using authorization
         if ($this->configuration->getUseAuthorization()) {
@@ -587,6 +584,19 @@ abstract class BaseAPI
         }
 
         return $this;
+    }
+
+    /**
+     * Handles a request when an unknown endpoint is requested.
+     *
+     * @return $this The current object.
+     */
+    public function unknownEndpoint()
+    {
+        // Set a 404 error and output
+        $this->repsonse = ['error' => 1, 'message' => 'Unknown endpoint.'];
+        $this->statusCode = 404;
+        return $this->output(true);
     }
 
     /**
