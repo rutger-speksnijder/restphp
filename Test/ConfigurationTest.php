@@ -3,18 +3,36 @@ namespace Test;
 
 use \RestPHP\Configuration;
 
-class ConfigurationTest extends \PHPUnit_Framework_TestCase
-{
-    public function testCanCreateFromFile()
+if (version_compare(PHP_VERSION, '7.0', '>=')) {
+    class ConfigurationTest extends \PHPUnit\Framework\TestCase
     {
-        $c = new Configuration();
-        $c->createFromFile(dirname(__DIR__) . '/src/RestPHP/config.php');
-    }
+        public function testCanCreateFromFile()
+        {
+            $c = new Configuration();
+            $c->createFromFile(dirname(__DIR__) . '/src/RestPHP/config.php');
+        }
 
-    public function testCanNotCreateFromInvalidFile()
+        public function testCanNotCreateFromInvalidFile()
+        {
+            $this->setExpectedException('Exception');
+            $c = new Configuration();
+            $c->createFromFile('non_existing_configuration_file.php');
+        }
+    }
+} else {
+    class ConfigurationTest extends \PHPUnit_Framework_TestCase
     {
-        $this->setExpectedException('Exception');
-        $c = new Configuration();
-        $c->createFromFile('non_existing_configuration_file.php');
+        public function testCanCreateFromFile()
+        {
+            $c = new Configuration();
+            $c->createFromFile(dirname(__DIR__) . '/src/RestPHP/config.php');
+        }
+
+        public function testCanNotCreateFromInvalidFile()
+        {
+            $this->setExpectedException('Exception');
+            $c = new Configuration();
+            $c->createFromFile('non_existing_configuration_file.php');
+        }
     }
 }
