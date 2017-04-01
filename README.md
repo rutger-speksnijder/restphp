@@ -92,11 +92,9 @@ You probably want to create an htaccess file which points all requests to a PHP 
 ### htaccess
 An example of an htaccess file which points all requests to an index.php file:
 ```
-RewriteEngine on
-RewriteBase /
+RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php?l=$1 [L,QSA,NC]
+RewriteRule ^ index.php [L]
 ```
 
 ### index.php
@@ -151,9 +149,9 @@ $api = new API($_REQUEST['l']);
 // The errors are most likely OAuth2 related.
 if (!$api->hasError()) {
     // Define routes
-    $api->getRouter()->get('/example', array($api, 'example'));
-    $api->getRouter()->get('/user/([0-9]+)', array($api, 'user'));
-    $api->getRouter()->head('/user/([0-9]+)', array($api, 'user'));
+    $api->getRouter()->get('/example', [$api, 'example']);
+    $api->getRouter()->get('/user/([0-9]+)', [$api, 'user']);
+    $api->getRouter()->head('/user/([0-9]+)', [$api, 'user']);
 
     // Call the process method
     $api->process();
@@ -166,6 +164,8 @@ The route to "/user/(any number here)" will return a message if the request is a
 If the request to "/user/(any number here)" is a HEAD request, we will check if the user exists and set the status code accordingly.
 
 HEAD requests can be used to quickly check if a resource exists on a server, without retrieving a response body (http://www.pragmaticapi.com/blog/2013/02/14/restful-patterns-for-the-head-verb).
+
+The above two files are included in the Example directory.
 
 #### Examples of using a configuration object
 Using a configuration file:
@@ -200,11 +200,11 @@ Edit the Request Factory class and add the content type to the construct method:
 ```php
 public function __construct()
 {
-    $this->types = array(
+    $this->types = [
         // Other types...
         // Adding a new request type
         'image/png' => __NAMESPACE__ . '\\Types\\Image'
-    );
+    ];
 }
 ```
 
@@ -216,7 +216,7 @@ namespace RestPHP\Request\Types;
 class Image extends \RestPHP\Request\Request
 {
     // Default data
-    protected $data = array();
+    protected $data = [];
 
     // Method to transform the image into an array of data
     protected function transform() {
@@ -234,11 +234,11 @@ Edit the Response Factory class and add the content type to the construct method
 ```php
 public function __construct()
 {
-    $this->types = array(
+    $this->types = [
         // Other types...
         // Adding a new response type
         'image/png' => __NAMESPACE__ . '\\Types\\Image',
-    );
+    ];
 }
 ```
 
@@ -253,12 +253,12 @@ class Image extends \RestPHP\Response\Response
     protected $response = '';
 
     // The headers to output for this response
-    protected $headers = array(
+    protected $headers = [
         'Content-Type: image/png',
-    );
+    ];
 
     // The main method that gets called to transform the data
-    protected function transform($data, $hypertextRoutes = array())
+    protected function transform($data, $hypertextRoutes = [])
     {
         return $this->transformToImage($data, $hypertextRoutes);
     }
@@ -267,7 +267,7 @@ class Image extends \RestPHP\Response\Response
     //
     // Make sure to also transform the hypertext routes into the appropriate format
     // An example of this can be found in the other response type classes
-    private function transformToImage($data, $hypertextRoutes = array())
+    private function transformToImage($data, $hypertextRoutes = [])
     {
         return array_merge($data, $hypertextRoutes);
     }

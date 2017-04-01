@@ -20,9 +20,9 @@ class HTML extends \RestPHP\Response\Response
      * The headers for this particular response type.
      * @var array.
      */
-    protected $headers = array(
+    protected $headers = [
         'Content-Type: text/html',
-    );
+    ];
 
     /**
      * Transforms the data into an html response.
@@ -32,7 +32,7 @@ class HTML extends \RestPHP\Response\Response
      *
      * @return string The transformed response.
      */
-    protected function transform($data, $hypertextRoutes = array())
+    protected function transform($data, $hypertextRoutes = [])
     {
         return $this->transformToHtml($data, $hypertextRoutes);
     }
@@ -46,7 +46,7 @@ class HTML extends \RestPHP\Response\Response
      *
      * @return string The response as an html string.
      */
-    private function transformToHtml($data, $hypertextRoutes = array())
+    private function transformToHtml($data, $hypertextRoutes = [])
     {
         // Generate the html for the hypertext routes
         $hypertextHtml = $this->getHypertextHtml($hypertextRoutes);
@@ -80,7 +80,7 @@ class HTML extends \RestPHP\Response\Response
      *
      * @return string The hypertext routes html table.
      */
-    private function getHypertextHtml($routes = array())
+    private function getHypertextHtml($routes = [])
     {
         // Check if we have routes
         if (!$routes) {

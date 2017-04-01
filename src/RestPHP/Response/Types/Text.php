@@ -20,9 +20,9 @@ class Text extends \RestPHP\Response\Response
      * The headers for this particular response type.
      * @var array.
      */
-    protected $headers = array(
+    protected $headers = [
         'Content-Type: text/plain',
-    );
+    ];
 
     /**
      * Transforms the data into a text response.
@@ -32,7 +32,7 @@ class Text extends \RestPHP\Response\Response
      *
      * @return string The transformed response.
      */
-    protected function transform($data, $hypertextRoutes = array())
+    protected function transform($data, $hypertextRoutes = [])
     {
         return $this->transformToText($data, $hypertextRoutes);
     }
@@ -45,7 +45,7 @@ class Text extends \RestPHP\Response\Response
      *
      * @return string The response as a text string.
      */
-    private function transformToText($data, $hypertextRoutes = array(), $depth = 0)
+    private function transformToText($data, $hypertextRoutes = [], $depth = 0)
     {
         // Return the data as string if it's not an array
         if (!is_array($data)) {
@@ -62,7 +62,7 @@ class Text extends \RestPHP\Response\Response
 
             if (is_array($v)) {
                 // Recursively transform underlying data
-                $str .= "{$k}: {$this->transformToText($v, array(), $depth+1)}\n";
+                $str .= "{$k}: {$this->transformToText($v, [], $depth+1)}\n";
             } else {
                 $str .= "{$k}: {$v}\n";
             }
@@ -80,7 +80,7 @@ class Text extends \RestPHP\Response\Response
      *
      * @return string The hypertext routes transformed into a string.
      */
-    private function getHypertextString($routes = array())
+    private function getHypertextString($routes = [])
     {
         // Check if we have routes
         if (!$routes) {

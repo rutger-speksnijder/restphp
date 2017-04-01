@@ -20,9 +20,9 @@ class JSON extends \RestPHP\Response\Response
      * The headers for this particular response type.
      * @var array.
      */
-    protected $headers = array(
+    protected $headers = [
         'Content-Type: application/json',
-    );
+    ];
 
     /**
      * Transforms the data into a json response.
@@ -32,13 +32,13 @@ class JSON extends \RestPHP\Response\Response
      *
      * @return string The transformed response.
      */
-    protected function transform($data, $hypertextRoutes = array())
+    protected function transform($data, $hypertextRoutes = [])
     {
         $links = $this->getHypertextJson($hypertextRoutes);
         if ($links && is_array($data)) {
             $data['_links'] = $links;
         } elseif ($links && !is_array($data)) {
-            $data = array($data, '_links' => $links);
+            $data = [$data, '_links' => $links];
         }
         return json_encode($data);
     }
@@ -50,14 +50,14 @@ class JSON extends \RestPHP\Response\Response
      *
      * @return array An array of links for the json string.
      */
-    private function getHypertextJson($routes = array())
+    private function getHypertextJson($routes = [])
     {
         if (!$routes) {
             return false;
         }
-        $links = array();
+        $links = [];
         foreach ($routes as $name => $route) {
-            $links[] = array('rel' => $name, 'href' => $route);
+            $links[] = ['rel' => $name, 'href' => $route];
         }
         return $links;
     }

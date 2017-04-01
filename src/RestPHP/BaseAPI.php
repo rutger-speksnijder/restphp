@@ -234,7 +234,7 @@ abstract class BaseAPI
         // Check if the request type is a supported request type
         if (!$requestFactory->isSupported($requestType)) {
             // Show an error
-            $this->response = array('error' => 1, 'message' => 'Unsupported request type.');
+            $this->response = ['error' => 1, 'message' => 'Unsupported request type.'];
             $this->statusCode = 415;
             $this->output(true);
             $this->error = true;
@@ -246,7 +246,7 @@ abstract class BaseAPI
 
         // Return an error message on invalid method
         if (!in_array($this->method, ['delete', 'post', 'get', 'put', 'patch', 'head', 'options'])) {
-            $this->response = array('error' => 1, 'message' => 'Invalid method.');
+            $this->response = ['error' => 1, 'message' => 'Invalid method.'];
             $this->statusCode = 405;
             $this->output(true);
             $this->error = true;
@@ -575,11 +575,11 @@ abstract class BaseAPI
         // Only add these routes if we're using authorization
         if ($this->configuration->getUseAuthorization()) {
             // Token route for requesting tokens
-            $this->router->add('/token', array($this, 'token'));
+            $this->router->add('/token', [$this, 'token']);
 
             if ($this->configuration->getAuthorizationMode() >= 2) {
                 // Token route for authorizing a client
-                $this->router->add('/authorize', array($this, 'authorize'));
+                $this->router->add('/authorize', [$this, 'authorize']);
             }
         }
 
@@ -715,7 +715,7 @@ abstract class BaseAPI
 
             // Create a response with the authorization code
             $code = substr($response->getHttpHeader('Location'), strpos($response->getHttpHeader('Location'), 'code=')+5, 40);
-            $this->response = array('status' => 1, 'authorization_code' => $code);
+            $this->response = ['status' => 1, 'authorization_code' => $code];
             $this->statusCode = 200;
             $this->output(true);
             return $this;

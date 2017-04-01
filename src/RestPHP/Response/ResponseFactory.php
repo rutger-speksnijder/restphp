@@ -22,7 +22,7 @@ class ResponseFactory
      */
     public function __construct()
     {
-        $this->types = array(
+        $this->types = [
             // HTML
             'text/html' => __NAMESPACE__ . '\\Types\\HTML',
 
@@ -35,7 +35,7 @@ class ResponseFactory
 
             // Plain text
             'text/plain' => __NAMESPACE__ . '\\Types\\Text',
-        );
+        ];
     }
 
     /**
@@ -49,7 +49,7 @@ class ResponseFactory
      *
      * @return \RestPHP\Response The created object.
      */
-    public function build($type, $data, $hypertextRoutes = array())
+    public function build($type, $data, $hypertextRoutes = [])
     {
         if (!isset($this->types[$type])) {
             throw new \Exception("Unknown response type.");

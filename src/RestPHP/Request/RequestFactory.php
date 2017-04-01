@@ -22,7 +22,7 @@ class RequestFactory
      */
     public function __construct()
     {
-        $this->types = array(
+        $this->types = [
             // GET
             '' => __NAMESPACE__ . '\\Types\\GET',
             'text/plain' => __NAMESPACE__ . '\\Types\\GET',
@@ -36,7 +36,7 @@ class RequestFactory
 
             // JSON
             'application/json' => __NAMESPACE__ . '\\Types\\JSON',
-        );
+        ];
     }
 
     /**

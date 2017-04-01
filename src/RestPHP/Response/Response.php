@@ -20,7 +20,7 @@ abstract class Response implements \RestPHP\Response\ResponseInterface
      * The headers to send for this particular response type.
      * @var array.
      */
-    protected $headers = array();
+    protected $headers = [];
 
     /**
      * Constructs the new response class.
@@ -28,7 +28,7 @@ abstract class Response implements \RestPHP\Response\ResponseInterface
      * @param mixed $data The response data.
      * @param optional array $hypertextRoutes An array of hypertext routes.
      */
-    final public function __construct($data, $hypertextRoutes = array())
+    final public function __construct($data, $hypertextRoutes = [])
     {
         $this->response = $this->transform($data, $hypertextRoutes);
     }
@@ -44,7 +44,7 @@ abstract class Response implements \RestPHP\Response\ResponseInterface
      *
      * @return string The transformed response data.
      */
-    abstract protected function transform($data, $hypertextRoutes = array());
+    abstract protected function transform($data, $hypertextRoutes = []);
 
     /**
      * Gets the response.

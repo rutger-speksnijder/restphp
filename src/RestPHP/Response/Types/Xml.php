@@ -20,9 +20,9 @@ class XML extends \RestPHP\Response\Response
      * The headers for this particular response type.
      * @var array.
      */
-    protected $headers = array(
+    protected $headers = [
         'Content-Type: application/xml',
-    );
+    ];
 
     /**
      * Transforms the data into an xml response.
@@ -32,7 +32,7 @@ class XML extends \RestPHP\Response\Response
      *
      * @return string The transformed response.
      */
-    protected function transform($data, $hypertextRoutes = array())
+    protected function transform($data, $hypertextRoutes = [])
     {
         return $this->transformToXml($data, $hypertextRoutes);
     }
@@ -45,7 +45,7 @@ class XML extends \RestPHP\Response\Response
      *
      * @return string The response as an xml string.
      */
-     private function transformToXml($data = [], $hypertextRoutes = array(), $depth = 0)
+     private function transformToXml($data = [], $hypertextRoutes = [], $depth = 0)
      {
         // Set the xml string
         $xml = '';
@@ -77,7 +77,7 @@ class XML extends \RestPHP\Response\Response
 
             // Check if the value is an array. If so, generate xml for it.
             if (is_array($v)) {
-                $xml .= "<{$key}>\n{$this->transformToXml($v, array(), $depth+1)}\n</{$key}>\n";
+                $xml .= "<{$key}>\n{$this->transformToXml($v, [], $depth+1)}\n</{$key}>\n";
             } else {
                 $xml .= "<{$key}>{$v}</{$key}>\n";
             }
@@ -100,7 +100,7 @@ class XML extends \RestPHP\Response\Response
      *
      * @return string The hypertext routes xml string.
      */
-    private function getHypertextXml($routes = array())
+    private function getHypertextXml($routes = [])
     {
         // Check if we have routes
         if (!$routes) {

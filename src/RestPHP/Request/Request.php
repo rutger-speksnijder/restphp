@@ -14,7 +14,7 @@ abstract class Request implements \RestPHP\Request\RequestInterface
      * The request data.
      * @var array.
      */
-    protected $data = array();
+    protected $data = [];
 
     /**
      * Constructs the new request class and sanitizes the data.

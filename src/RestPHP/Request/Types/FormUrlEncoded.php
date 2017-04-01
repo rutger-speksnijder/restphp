@@ -14,7 +14,7 @@ class FormUrlEncoded extends \RestPHP\Request\Request
      * The request data.
      * @var array.
      */
-    protected $data = array();
+    protected $data = [];
 
     /**
      * Transforms the data into an array.
