@@ -14,7 +14,7 @@ if (version_compare(PHP_VERSION, '7.0', '>=')) {
 
         public function testCanNotCreateFromInvalidFile()
         {
-            $this->expectException(get_class(new \Exception));
+            $this->expectException('Exception');
             $c = new Configuration();
             $c->createFromFile('non_existing_configuration_file.php');
         }
