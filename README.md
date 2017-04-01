@@ -98,7 +98,7 @@ RewriteRule ^ index.php [L]
 ```
 
 ### index.php
-In your index.php file you would then create your API class.
+In your index.php file you could then create your API class.
 An example of this:
 ```php
 <?php
@@ -108,11 +108,6 @@ ini_set('display_errors', 'On');
 
 // Autoloader
 require 'vendor/autoload.php';
-
-// Check for an empty request
-if (!isset($_REQUEST['l'])) {
-    $_REQUEST['l'] = '';
-}
 
 // Your API class extending from the BaseAPI
 class API extends \RestPHP\BaseAPI
@@ -142,7 +137,7 @@ class API extends \RestPHP\BaseAPI
 }
 
 // Create the API using the default configuration file
-$api = new API($_REQUEST['l']);
+$api = new API($_SERVER['REQUEST_URI']);
 
 // Check if no errors occurred during creation
 // If errors did occur they must be fixed before the API will work.
@@ -173,7 +168,7 @@ Using a configuration file:
 <?php
 // Create the API using a different configuration file
 $configuration = (new \RestPHP\Configuration)->createFromFile('config.php');
-$api = new API($_REQUEST['l'], $configuration);
+$api = new API($_SERVER['REQUEST_URI'], $configuration);
 ```
 Creating the object:
 ```php
@@ -190,7 +185,7 @@ $configuration = new \RestPHP\Configuration(
     $responseType = 'text/html',
     $clientResponseType = true
 );
-$api = new API($_REQUEST['l'], $configuration);
+$api = new API($_SERVER['REQUEST_URI'], $configuration);
 ```
 
 #### Adding a request content type
@@ -219,7 +214,8 @@ class Image extends \RestPHP\Request\Request
     protected $data = [];
 
     // Method to transform the image into an array of data
-    protected function transform() {
+    protected function transform()
+    {
         return $data;
     }
 }

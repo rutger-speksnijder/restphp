@@ -6,11 +6,6 @@ ini_set('display_errors', 'On');
 // Autoloader
 require 'vendor/autoload.php';
 
-// Check for an empty request
-if (!isset($_REQUEST['l'])) {
-    $_REQUEST['l'] = '';
-}
-
 // Your API class extending from the BaseAPI
 class API extends \RestPHP\BaseAPI
 {
@@ -39,7 +34,7 @@ class API extends \RestPHP\BaseAPI
 }
 
 // Create the API using the default configuration file
-$api = new API($_REQUEST['l']);
+$api = new API($_SERVER['REQUEST_URI']);
 
 // Check if no errors occurred during creation
 // If errors did occur they must be fixed before the API will work.
