@@ -3,6 +3,9 @@ namespace Test;
 
 use \RestPHP\Configuration;
 
+echo PHP_VERSION.PHP_EOL;
+echo phpversion().PHP_EOL;
+
 if (version_compare(PHP_VERSION, '7.0', '>=')) {
     class ConfigurationTest extends \PHPUnit\Framework\TestCase
     {
