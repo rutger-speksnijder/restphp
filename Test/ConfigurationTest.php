@@ -3,10 +3,6 @@ namespace Test;
 
 use \RestPHP\Configuration;
 
-echo PHP_VERSION.PHP_EOL;
-echo phpversion().PHP_EOL;
-
-/*
 if (version_compare(PHP_VERSION, '7.0', '>=')) {
     class ConfigurationTest extends \PHPUnit\Framework\TestCase
     {
@@ -18,7 +14,7 @@ if (version_compare(PHP_VERSION, '7.0', '>=')) {
 
         public function testCanNotCreateFromInvalidFile()
         {
-            $this->expectException(\Exception::class);
+            $this->expectException(get_class(new \Exception));
             $c = new Configuration();
             $c->createFromFile('non_existing_configuration_file.php');
         }
@@ -40,4 +36,3 @@ if (version_compare(PHP_VERSION, '7.0', '>=')) {
         }
     }
 }
-*/
